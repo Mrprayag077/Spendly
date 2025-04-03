@@ -10,31 +10,22 @@ import {
   ResponsiveContainer,
   TooltipProps,
 } from "recharts";
+import {
+  BudgetTooltip,
+  COLORS,
+  CustomLegend,
+  CustomTooltip,
+  dailyBudgetData,
+} from "./ChartExtras";
 
 interface ChartData {
   name: string;
   value: number;
 }
 
-interface BudgetData {
-  date: string;
-  budget: number;
-  actual: number;
-}
-
 interface ChartsProps {
   pieChartData: ChartData[];
 }
-
-const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#8884d8",
-  "#FF6B6B",
-  "#6B8E23",
-];
 
 const Charts = ({ pieChartData }: ChartsProps) => {
   return (
@@ -44,7 +35,7 @@ const Charts = ({ pieChartData }: ChartsProps) => {
         <h2 className="text-lg font-semibold text-gray-700 mb-4">
           Expense Breakdown
         </h2>
-        <div className="h-64">
+        <div className="h-64 flex justify-center gap-2">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -56,13 +47,10 @@ const Charts = ({ pieChartData }: ChartsProps) => {
                 innerRadius={45}
                 paddingAngle={5}
                 dataKey="value"
-                label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
                 animationBegin={200}
                 animationDuration={800}
               >
-                {pieChartData.map((entry, index) => (
+                {pieChartData.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
@@ -74,6 +62,7 @@ const Charts = ({ pieChartData }: ChartsProps) => {
               <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
+          <CustomLegend pieChartData={pieChartData} />
         </div>
       </div>
 
@@ -134,51 +123,5 @@ const Charts = ({ pieChartData }: ChartsProps) => {
   );
 };
 
-// Tooltip Components with TypeScript
-const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100">
-        <p className="font-medium text-gray-700">{payload[0].name}</p>
-        <p className="text-blue-600">${payload[0].value?.toLocaleString()}</p>
-      </div>
-    );
-  }
-  return null;
-};
-
-const BudgetTooltip = ({
-  active,
-  payload,
-  label,
-}: TooltipProps<number, string>) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100">
-        <p className="font-medium text-gray-700 mb-1">{label}</p>
-        <div className="space-y-1">
-          <p className="text-indigo-600">
-            Budget: ${payload[0].value?.toFixed(2)}
-          </p>
-          <p className="text-emerald-600">
-            Actual: ${payload[1].value?.toFixed(2)}
-          </p>
-        </div>
-      </div>
-    );
-  }
-  return null;
-};
-
-// Sample data with type
-const dailyBudgetData: BudgetData[] = [
-  { date: "Mon", budget: 4000, actual: 2400 },
-  { date: "Tue", budget: 3000, actual: 1398 },
-  { date: "Wed", budget: 2000, actual: 9800 },
-  { date: "Thu", budget: 2780, actual: 3908 },
-  { date: "Fri", budget: 1890, actual: 4800 },
-  { date: "Sat", budget: 2390, actual: 3800 },
-  { date: "Sun", budget: 3490, actual: 4300 },
-];
 
 export default Charts;

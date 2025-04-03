@@ -1,20 +1,9 @@
 import React, { useState } from "react";
-import {
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area,
-} from "recharts";
-import { DollarSign, PlusCircle, MinusCircle, Wallet } from "lucide-react";
 import SummaryCard from "@/components/common/SummaryCard";
 import Header from "@/components/common/Header";
 import Transactions from "@/components/common/Transactions";
 import Charts from "@/components/common/Charts";
+import Summary from "@/components/common/SummaryCard";
 
 const data2 = [
   {
@@ -117,39 +106,8 @@ const Home = () => {
 
       <main className="pt-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            <SummaryCard
-              title="Total Income"
-              value={summary.totalIncome}
-              icon={<PlusCircle className="text-green-600" />}
-              bgColor="bg-green-50"
-              textColor="text-green-800"
-            />
-            <SummaryCard
-              title="Total Expenses"
-              value={summary.totalExpenses}
-              icon={<MinusCircle className="text-red-600" />}
-              bgColor="bg-red-50"
-              textColor="text-red-800"
-            />
-            <SummaryCard
-              title="Balance"
-              value={summary.balance}
-              icon={<Wallet className="text-blue-600" />}
-              bgColor="bg-blue-50"
-              textColor="text-blue-800"
-            />
-            <SummaryCard
-              title="Monthly Budget"
-              value={summary.budget}
-              icon={<DollarSign className="text-purple-600" />}
-              bgColor="bg-purple-50"
-              textColor="text-purple-800"
-            />
-          </div>
+          <Summary summary={summary} />
 
-          {/* Charts Section */}
           <Charts pieChartData={pieChartData} />
 
           <Transactions transactions={transactions} />

@@ -28,23 +28,23 @@ interface ChartsProps {
 
 const Charts = ({ pieChartData }: ChartsProps) => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-3">
       {/* Pie Chart Card */}
-      <div className="bg-white p-6 rounded-xl shadow-sm transition-all hover:shadow-md">
+      <div className="bg-white p-6 rounded-xl shadow-sm transition-all">
         <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
           Expense Breakdown
         </h2>
-        <div className="h-64 flex gap-4 items-center">
-          <ResponsiveContainer width="60%" height="100%">
+        <div className="h-64 flex gap-0 items-center">
+          <ResponsiveContainer width="70%" height="100%">
             <PieChart>
               <Pie
                 data={pieChartData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                outerRadius={80}
-                innerRadius={60}
-                paddingAngle={2}
+                outerRadius={120}
+                innerRadius={65}
+                paddingAngle={3}
                 dataKey="value"
                 animationBegin={200}
                 animationDuration={800}
@@ -53,16 +53,12 @@ const Charts = ({ pieChartData }: ChartsProps) => {
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
-                    stroke="#f8fafc"
-                    strokeWidth={4}
-                    className="hover:opacity-80 transition-opacity"
+                    stroke="#ffffff"
+                    strokeWidth={2}
                   />
                 ))}
               </Pie>
-              <Tooltip
-                content={<CustomTooltip />}
-                cursor={{ fill: "rgba(241, 245, 249, 0.5)" }}
-              />
+              <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
           <CustomLegend pieChartData={pieChartData} />

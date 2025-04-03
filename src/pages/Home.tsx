@@ -4,6 +4,9 @@ import Header from "@/components/common/Header";
 import Transactions from "@/components/common/Transactions";
 import Charts from "@/components/common/Charts";
 import Summary from "@/components/common/SummaryCard";
+import { Briefcase } from "lucide-react";
+import { getInitials, ProfileIcon } from "@/utils/Porfile";
+import ProgressSection from "@/components/common/ProgressBar";
 
 const data2 = [
   {
@@ -81,7 +84,6 @@ const Home = () => {
 
   const [transactions, setTransactions] = useState(data2);
 
-
   // Calculate expense categories for pie chart
   const expenseCategories = transactions
     .filter((t) => t.type === "expense")
@@ -98,7 +100,7 @@ const Home = () => {
     value: expenseCategories[category],
   }));
 
-
+  const userName = "Prayag Bhosale";
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -106,9 +108,26 @@ const Home = () => {
 
       <main className="pt-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Summary summary={summary} />
+          <div
+            className={`bg-white rounded-2xl shadow-md p-2 lg:p-6 transition-all duration-500 mb-4`}
+          >
+            {/* header */}
+            <div className="flex justify-between items-center -md:mb-2">
+              <div className="flex justify-center items-center space-x-3 mb-4">
+                {userName && <ProfileIcon name={userName} />}
+                <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+                  {userName}
+                </h1>
+                <div></div>
+              </div>
+            </div>
 
-          <Charts pieChartData={pieChartData} />
+            <Summary summary={summary} />
+
+            <ProgressSection />
+
+            <Charts pieChartData={pieChartData} />
+          </div>
 
           <Transactions transactions={transactions} />
         </div>

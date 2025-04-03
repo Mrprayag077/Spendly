@@ -58,15 +58,6 @@ export const CustomLegend: React.FC<{ pieChartData: PieChartData[] }> = ({
                     {percentage}%
                   </span>
                 </div>
-                <div className="h-1 bg-gray-100 rounded-full mt-1">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${percentage}%`,
-                      backgroundColor: COLORS[index % COLORS.length],
-                    }}
-                  ></div>
-                </div>
               </div>
             </div>
           );

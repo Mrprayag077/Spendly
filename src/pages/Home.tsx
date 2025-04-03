@@ -11,6 +11,7 @@ import * as d3 from "d3";
 import D3Charts from "@/components/common/ChartD3";
 import Header from "@/components/common/Header";
 import Cards from "@/components/common/Cards";
+import BudgetProgress from "@/components/common/BudgetProgress";
 
 const Home = () => {
   const [summary, setSummary] = useState({
@@ -132,29 +133,16 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Cards summary={summary} />
 
-          {/* Budget Progress */}
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-semibold">Monthly Budget Progress</h2>
-              <p className="text-sm text-gray-500">
-                ${summary.totalExpenses} of ${summary.budget}
-              </p>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-4">
-              <div
-                className={`h-4 rounded-full ${budgetProgressColor}`}
-                style={{ width: `${budgetProgress}%` }}
-              ></div>
-            </div>
-            <div className="flex justify-between mt-2 text-sm">
-              <p className="text-gray-500">
-                {budgetProgress.toFixed(1)}% spent
-              </p>
-              <p className="text-gray-500">
-                {(100 - budgetProgress).toFixed(1)}% remaining
-              </p>
-            </div>
-          </div>
+          <BudgetProgress
+            currentAmount={summary.totalExpenses}
+            totalBudget={summary.budget}
+            title="Monthly Budget Progress"
+            showPercentages={true}
+            showAmounts={true}
+            height="md"
+            colorThresholds={{ safe: 60, warning: 80, danger: 90 }}
+            className="mb-8"
+          />
 
           {/* Charts Section */}
           <div className="w-full">

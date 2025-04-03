@@ -8,7 +8,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  TooltipProps,
 } from "recharts";
 import {
   BudgetTooltip,
@@ -32,11 +31,11 @@ const Charts = ({ pieChartData }: ChartsProps) => {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       {/* Pie Chart Card */}
       <div className="bg-white p-6 rounded-xl shadow-sm transition-all hover:shadow-md">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
           Expense Breakdown
         </h2>
-        <div className="h-64 flex justify-center gap-2">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="h-64 flex gap-4 items-center">
+          <ResponsiveContainer width="60%" height="100%">
             <PieChart>
               <Pie
                 data={pieChartData}
@@ -44,22 +43,26 @@ const Charts = ({ pieChartData }: ChartsProps) => {
                 cy="50%"
                 labelLine={false}
                 outerRadius={80}
-                innerRadius={45}
-                paddingAngle={5}
+                innerRadius={60}
+                paddingAngle={2}
                 dataKey="value"
                 animationBegin={200}
                 animationDuration={800}
               >
-                {pieChartData.map((_, index) => (
+                {pieChartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
-                    stroke="#ffffff"
-                    strokeWidth={2}
+                    stroke="#f8fafc"
+                    strokeWidth={4}
+                    className="hover:opacity-80 transition-opacity"
                   />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ fill: "rgba(241, 245, 249, 0.5)" }}
+              />
             </PieChart>
           </ResponsiveContainer>
           <CustomLegend pieChartData={pieChartData} />
@@ -122,6 +125,5 @@ const Charts = ({ pieChartData }: ChartsProps) => {
     </div>
   );
 };
-
 
 export default Charts;

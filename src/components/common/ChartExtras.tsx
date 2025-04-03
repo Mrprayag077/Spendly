@@ -1,40 +1,77 @@
 import { TooltipProps } from "recharts";
 
+interface PieChartData {
+  name: string;
+  value: number;
+}
+
 export const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
   active,
   payload,
 }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100">
-        <p className="font-medium text-gray-700">{payload[0].name}</p>
-        <p className="text-blue-600">${payload[0].value?.toLocaleString()}</p>
+      <div className="bg-white p-3 rounded-lg shadow-xl border border-gray-100 backdrop-blur-sm">
+        <p className="font-medium text-gray-700 text-sm mb-1">
+          {payload[0].name}
+        </p>
+        <p className="text-blue-600 font-semibold">
+          $
+          {payload[0].value?.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
       </div>
     );
   }
   return null;
 };
-interface PieChartData {
-  name: string;
-  value: number;
-}
 
 export const CustomLegend: React.FC<{ pieChartData: PieChartData[] }> = ({
   pieChartData,
 }) => {
+  const total = pieChartData.reduce((sum, entry) => sum + entry.value, 0);
+
   return (
-    <div className="flex flex-col gap-3">
-      {pieChartData.map((entry, index) => (
-        <div key={index} className="flex items-center gap-2">
-          <div
-            className="w-4 h-4 rounded-full"
-            style={{ backgroundColor: COLORS[index % COLORS.length] }}
-          ></div>
-          <span className="text-sm font-medium text-gray-700">
-            {entry.name}
-          </span>
-        </div>
-      ))}
+    <div className="flex flex-col gap-2 w-full max-w-[160px]">
+      <h3 className="text-sm font-medium text-gray-500 mb-2">Categories</h3>
+      <div className="overflow-y-scroll h-full mb-4 pb-4 scrollbar-thin">
+        {pieChartData.map((entry, index) => {
+          const percentage = ((entry.value / total) * 100).toFixed(1);
+
+          return (
+            <div
+              key={index}
+              className="flex items-center gap-3 group cursor-pointer hover:bg-slate-50 px-2 py-1 rounded-lg transition-colors"
+            >
+              <div
+                className="w-3 h-3 rounded-full shadow-sm transition-transform group-hover:scale-125"
+                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+              ></div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700 truncate">
+                    {entry.name}
+                  </span>
+                  <span className="text-xs font-medium text-gray-500 ml-2">
+                    {percentage}%
+                  </span>
+                </div>
+                <div className="h-1 bg-gray-100 rounded-full mt-1">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${percentage}%`,
+                      backgroundColor: COLORS[index % COLORS.length],
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, DollarSign, Filter, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { categoryType } from "@/store/transactionSlice/transactionSlice";
 
 interface FilterModalProps {
   open: boolean;
@@ -20,8 +21,8 @@ interface FilterModalProps {
   categories: string[];
   selectedCategories: string[];
   toggleCategory: (category: string) => void;
-  selectedTypes: string[];
-  toggleType: (type: string) => void;
+  selectedTypes: categoryType[];
+  toggleType: (type: categoryType) => void;
   amountRange: { min: number; max: number };
   setAmountRange: (range: { min: number; max: number }) => void;
   maxPossibleAmount: number;
@@ -131,8 +132,8 @@ const FilterModal = ({
                 >
                   <input
                     type="checkbox"
-                    checked={selectedTypes.includes(type)}
-                    onChange={() => toggleType(type)}
+                    checked={selectedTypes.includes(type as categoryType)}
+                    onChange={() => toggleType(type as categoryType)}
                     className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                   />
                   {type.charAt(0).toUpperCase() + type.slice(1)}

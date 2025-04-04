@@ -9,10 +9,10 @@ export interface SummaryState {
 }
 
 const initialState: SummaryState = {
-  totalIncome: 5280,
-  totalExpenses: 3450,
-  balance: 1830,
-  budget: 20000,
+  totalIncome: 0,
+  totalExpenses: 0,
+  balance: 0,
+  budget: 1,
 };
 
 const summarySlice = createSlice({

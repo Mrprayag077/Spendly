@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
+export type categoryType = "income" | "expense";
+
 export interface Transaction {
-  // id: string;
-  type: "income" | "expense";
+  type: categoryType;
   category: string;
   amount: number;
   date: string;
@@ -15,7 +16,6 @@ interface TransactionState {
 
 const initialState: TransactionState = {
   transactions:[]
-  
 };
 
 const transactionSlice = createSlice({

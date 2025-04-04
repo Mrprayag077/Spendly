@@ -11,13 +11,13 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { PlusCircle } from "lucide-react";
-import { addTransaction } from "@/store/transactionSlice/transactionSlice";
+import { addTransaction, categoryType } from "@/store/transactionSlice/transactionSlice";
 
 export const AddTransactionModal = () => {
   const dispatch = useDispatch();
 
-  const [open, setOpen] = useState(false); // ⬅️ control dialog open state
-  const [type, setType] = useState<"income" | "expense">("expense");
+  const [open, setOpen] = useState(false); 
+  const [type, setType] = useState<categoryType>("expense");
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
@@ -61,7 +61,7 @@ export const AddTransactionModal = () => {
           <select
             className="border border-indigo-200 p-2 rounded-md bg-white hover:border-indigo-400 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition-colors"
             value={type}
-            onChange={(e) => setType(e.target.value as "income" | "expense")}
+            onChange={(e) => setType(e.target.value as categoryType)}
           >
             <option value="expense">Expense</option>
             <option value="income">Income</option>

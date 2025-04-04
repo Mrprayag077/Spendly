@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import {
+  categoryType,
   Transaction,
   userTransactions,
 } from "@/store/transactionSlice/transactionSlice";
@@ -19,6 +20,7 @@ import { AddTransactionModal } from "../Home/AddTransactionModal";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Slider } from "../ui/slider";
 import { format } from "date-fns";
+import FilterModal from "./FilterModal";
 
 interface DateRange {
   from: string;
@@ -47,9 +49,7 @@ const Transactions = () => {
 
   const [dateRange, setDateRange] = useState<DateRange>({ from: "", to: "" });
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<("income" | "expense")[]>(
-    []
-  );
+  const [selectedTypes, setSelectedTypes] = useState<categoryType[]>([]);
   const [amountRange, setAmountRange] = useState<AmountRange>({
     min: 0,
     max: 10000,
@@ -176,7 +176,7 @@ const Transactions = () => {
     );
   };
 
-  const toggleType = (type: "income" | "expense") => {
+  const toggleType = (type: categoryType) => {
     setSelectedTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
@@ -209,175 +209,40 @@ const Transactions = () => {
             )}
           </div>
 
-          <Popover open={filterOpen} onOpenChange={setFilterOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={`flex items-center gap-2 shadow-sm transition-colors duration-200 ${
-                  activeFilters.length > 0
-                    ? "border-indigo-400 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
-                    : "border-gray-200 hover:bg-gray-50"
-                }`}
-              >
-                <Filter className="h-4 w-4" />
-                Filters
-                {activeFilters.length > 0 && (
-                  <span className="bg-indigo-100 text-indigo-700 rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold shadow-inner">
-                    {activeFilters.length}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
+          <Button
+            onClick={() => setFilterOpen(true)}
+            variant="outline"
+            className={`flex items-center gap-2 shadow-sm ${
+              activeFilters.length > 0
+                ? "border-indigo-400 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+                : "border-gray-200 hover:bg-gray-50"
+            }`}
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+            {activeFilters.length > 0 && (
+              <span className="bg-indigo-100 text-indigo-700 rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold shadow-inner">
+                {activeFilters.length}
+              </span>
+            )}
+          </Button>
 
-            <PopoverContent
-              className="w-96 p-0 rounded-2xl shadow-xl border border-indigo-100 bg-gradient-to-br from-white via-indigo-50 to-white"
-              align="end"
-            >
-              <div className="p-4 border-b border-indigo-100">
-                <h3 className="font-semibold text-indigo-800 text-lg">
-                  Filters
-                </h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  Narrow down your transactions
-                </p>
-              </div>
-
-              {}
-              <div className="p-4 border-b border-indigo-100">
-                <div className="flex items-center gap-2 mb-3">
-                  <Calendar className="h-4 w-4 text-indigo-500" />
-                  <h4 className="font-medium text-gray-700">Date Range</h4>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="text-xs text-gray-500 mb-1 block">
-                      From
-                    </label>
-                    <Input
-                      type="date"
-                      value={dateRange.from}
-                      onChange={(e) =>
-                        setDateRange((prev) => ({
-                          ...prev,
-                          from: e.target.value,
-                        }))
-                      }
-                      className="text-sm border-indigo-200 focus:ring-indigo-300"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-500 mb-1 block">
-                      To
-                    </label>
-                    <Input
-                      type="date"
-                      value={dateRange.to}
-                      onChange={(e) =>
-                        setDateRange((prev) => ({
-                          ...prev,
-                          to: e.target.value,
-                        }))
-                      }
-                      className="text-sm border-indigo-200 focus:ring-indigo-300"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {}
-              <div className="p-4 border-b border-indigo-100">
-                <div className="flex items-center gap-2 mb-3">
-                  <Tag className="h-4 w-4 text-indigo-500" />
-                  <h4 className="font-medium text-gray-700">Categories</h4>
-                </div>
-                <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto pr-1 custom-scroll">
-                  {categories.map((category) => (
-                    <label
-                      key={category}
-                      className="flex items-center gap-2 text-sm text-gray-600"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedCategories.includes(category)}
-                        onChange={() => toggleCategory(category)}
-                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                      />
-                      {category}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {}
-              <div className="p-4 border-b border-indigo-100">
-                <div className="flex items-center gap-2 mb-3">
-                  <DollarSign className="h-4 w-4 text-indigo-500" />
-                  <h4 className="font-medium text-gray-700">
-                    Transaction Type
-                  </h4>
-                </div>
-                <div className="flex gap-3">
-                  <label className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                      type="checkbox"
-                      checked={selectedTypes.includes("income")}
-                      onChange={() => toggleType("income")}
-                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    />
-                    Income
-                  </label>
-                  <label className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                      type="checkbox"
-                      checked={selectedTypes.includes("expense")}
-                      onChange={() => toggleType("expense")}
-                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    />
-                    Expense
-                  </label>
-                </div>
-              </div>
-
-              {}
-              <div className="p-4 border-b border-indigo-100">
-                <div className="flex items-center gap-2 mb-3">
-                  <DollarSign className="h-4 w-4 text-indigo-500" />
-                  <h4 className="font-medium text-gray-700">Amount Range</h4>
-                </div>
-                <div className="px-2">
-                  <Slider
-                    min={0}
-                    max={maxPossibleAmount}
-                    step={10}
-                    value={[amountRange.min, amountRange.max]}
-                    onValueChange={([min, max]) => setAmountRange({ min, max })}
-                    className="mb-4"
-                  />
-                </div>
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>₹{amountRange.min}</span>
-                  <span>₹{amountRange.max}</span>
-                </div>
-              </div>
-
-              {}
-              <div className="p-4 flex justify-between">
-                <Button
-                  variant="ghost"
-                  onClick={resetFilters}
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  Reset All
-                </Button>
-                <Button
-                  onClick={() => setFilterOpen(false)}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
-                >
-                  Apply Filters
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <FilterModal
+            open={filterOpen}
+            onOpenChange={setFilterOpen}
+            activeFilters={activeFilters}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+            categories={categories}
+            selectedCategories={selectedCategories}
+            toggleCategory={toggleCategory}
+            selectedTypes={selectedTypes}
+            toggleType={toggleType}
+            amountRange={amountRange}
+            setAmountRange={setAmountRange}
+            maxPossibleAmount={maxPossibleAmount}
+            resetFilters={resetFilters}
+          />
 
           <AddTransactionModal />
         </div>

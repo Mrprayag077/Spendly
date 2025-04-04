@@ -30,16 +30,6 @@ const FinancialInsights = () => {
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
       }`}
     >
-      <div className="flex justify-end mb-2">
-        <button
-          onClick={() => setDismissed(true)}
-          className="text-gray-500 hover:text-gray-700 text-sm font-medium flex items-center gap-1 p-1 rounded hover:bg-gray-100 transition-colors duration-200"
-        >
-          <X size={14} />
-          <span>Dismiss all</span>
-        </button>
-      </div>
-
       {warnings.length > 0 && (
         <div className="overflow-hidden rounded-xl border border-yellow-300 shadow-sm bg-gradient-to-r from-yellow-50 to-yellow-100 transition-all duration-300 ease-in-out">
           <div
@@ -121,6 +111,16 @@ const FinancialInsights = () => {
           </div>
         </div>
       )}
+
+      <div className="flex justify-end mb-2">
+        <button
+          onClick={() => setDismissed(true)}
+          className="text-gray-500 cursor-pointer hover:text-gray-700 text-sm font-medium flex items-center gap-1 p-1 rounded hover:bg-gray-100 transition-colors duration-200"
+        >
+          <X size={14} />
+          <span>Dismiss all</span>
+        </button>
+      </div>
     </div>
   );
 };

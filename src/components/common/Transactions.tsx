@@ -21,6 +21,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Slider } from "../ui/slider";
 import { format } from "date-fns";
 import FilterModal from "./FilterModal";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationLink,
+  PaginationNext,
+} from "../ui/pagination";
 
 interface DateRange {
   from: string;
@@ -41,8 +49,7 @@ const Transactions = () => {
   const allTransactions: Transaction[] = useSelector(userTransactions);
   const [transactions, setTransactions] =
     useState<Transaction[]>(allTransactions);
-  
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -54,7 +61,6 @@ const Transactions = () => {
   );
 
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
-
 
   const [activeFilters, setActiveFilters] = useState<FilterItem[]>([]);
 
@@ -375,33 +381,48 @@ const Transactions = () => {
 
       {/* page */}
 
-      <div className="flex justify-between items-center mt-4">
-        <div className="text-sm text-gray-600">
-          Showing {indexOfFirstItem + 1}-
-          {Math.min(indexOfLastItem, transactions.length)} of{" "}
-          {transactions.length} transactions
-        </div>
+      <div className="my-2">
+        <Pagination>
+          <PaginationContent className="gap-1 text-xs">
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                className={`h-7 px-2 text-xs ${
+                  currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                }`}
+              />
+            </PaginationItem>
 
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </Button>
-        </div>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={index + 1 === currentPage}
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`h-7 px-3 text-xs rounded-md ${
+                    index + 1 === currentPage
+                      ? "bg-indigo-100/10 text-indigo-700"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                className={`h-7 px-2 text-xs ${
+                  currentPage === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }`}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );

@@ -179,7 +179,7 @@ export default Charts;
 const NoDataFallback = ({ label }: { label: string }) => {
   const isMobile = useBreakpoint("md");
   return (
-    <div className="flex flex-col items-center justify-center h-64 text-gray-500 bg-gray-50 rounded-xl shadow-inner animate-fadeIn">
+    <div className="flex flex-col items-center mt-2 justify-center h-64 text-gray-500 bg-gray-50 rounded-xl shadow-inner animate-fadeIn">
       <div className="p-4 bg-white rounded-full shadow-sm mb-3">
         <ChartArea
           size={isMobile ? 40 : 32}

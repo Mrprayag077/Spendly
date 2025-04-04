@@ -28,33 +28,34 @@ const summarySlice = createSlice({
     builder
       .addCase(addTransaction, (state, action) => {
         const transaction: Transaction = action.payload;
+        if (transaction.amount === 0) return;
+
         if (transaction.type === "income") {
           state.totalIncome += transaction.amount;
         } else {
           state.totalExpenses += transaction.amount;
         }
+        // state.balance = Math.max(0, state.totalIncome - state.totalExpenses);
         state.balance = state.totalIncome - state.totalExpenses;
       })
       .addCase(
         removeTransaction,
         (state, action: PayloadAction<Transaction>) => {
-          // You will need to pass more than just `date` for accurate removal
-          // For now, assume the action.payload is the full transaction
           const transaction: Transaction = action.payload;
+          if (transaction.amount === 0) return;
+
           if (transaction.type === "income") {
             state.totalIncome = Math.max(
               0,
               state.totalIncome - transaction.amount
             );
-
           } else {
             state.totalExpenses = Math.max(
               0,
               state.totalExpenses - transaction.amount
             );
-
           }
-          state.balance = state.totalIncome - state.totalExpenses || 0;
+          state.balance = Math.max(0, state.totalIncome - state.totalExpenses);
         }
       );
   },

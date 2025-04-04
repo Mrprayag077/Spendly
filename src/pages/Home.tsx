@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "@/store/authSlice/authSlice";
 import { userTransactions } from "@/store/transactionSlice/transactionSlice";
 import { selectSummary } from "@/store/summary/summarySlice";
+import FinancialWarnings from "@/components/common/FinancialWarnings";
 
 const Home: React.FC = () => {
   const userName = useSelector(selectUser);
@@ -34,8 +35,9 @@ const Home: React.FC = () => {
 
       <main className="pt-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FinancialWarnings />
+
           <div className="bg-white rounded-2xl shadow-xs p-2 lg:p-6 transition-all duration-500 mb-4">
-            {}
             <div className="flex justify-between items-center -md:mb-2">
               <div className="flex justify-center items-center space-x-3 mb-4">
                 {userName && userName.name ? (

@@ -18,23 +18,20 @@ import {
 } from "./ChartExtras";
 import useBreakpoint from "@/hooks/breakpoint";
 import { ChartArea } from "lucide-react";
+import { useChartData } from "@/store/selectors/useChartData";
+import { useState } from "react";
 
-interface ChartData {
-  name: string;
-  value: number;
-}
 
-interface ChartsProps {
-  pieChartData: ChartData[];
-}
-
-const Charts = ({ pieChartData }: ChartsProps) => {
+const Charts = () => {
+  const { pieChartExpenseData, pieChartIncomeData, dailyBudgetData } =
+    useChartData();
   const isMobile = useBreakpoint("md");
+  const [showExpense, setShowExpense] = useState(true);
 
-  const showPie = pieChartData && pieChartData.length > 0;
-  const showArea = dailyBudgetData && dailyBudgetData.length > 0;
+  const currentPieData = showExpense ? pieChartExpenseData : pieChartIncomeData;
+  const showPie = currentPieData.length > 0;
+  const showArea = dailyBudgetData.length > 0;
 
-  console.log(showPie, showArea);
   if (!showPie && !showArea) {
     return <NoDataFallback label="No data available to display charts." />;
   }
@@ -43,9 +40,27 @@ const Charts = ({ pieChartData }: ChartsProps) => {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-3">
       {/* Pie Chart Card */}
       <div className="bg-white p-6 rounded-xl shadow-sm transition-all">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          Expense Breakdown
-        </h2>
+        <div className="flex gap-2 justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            {showExpense ? "Expense Breakdown" : "Income Breakdown"}
+          </h2>
+          <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
+            <span className={showExpense ? "text-gray-900" : ""}>Expense</span>
+            <button
+              onClick={() => setShowExpense((prev) => !prev)}
+              className={`w-12 h-6 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ease-in-out ${
+                showExpense ? "bg-red-400" : "bg-green-400"
+              }`}
+            >
+              <div
+                className={`bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out ${
+                  showExpense ? "translate-x-0" : "translate-x-6"
+                }`}
+              />
+            </button>
+            <span className={!showExpense ? "text-gray-900" : ""}>Income</span>
+          </div>
+        </div>
 
         {showPie ? (
           <div
@@ -59,7 +74,7 @@ const Charts = ({ pieChartData }: ChartsProps) => {
             >
               <PieChart>
                 <Pie
-                  data={pieChartData}
+                  data={currentPieData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -70,7 +85,7 @@ const Charts = ({ pieChartData }: ChartsProps) => {
                   animationBegin={200}
                   animationDuration={800}
                 >
-                  {pieChartData.map((_, index) => (
+                  {currentPieData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
@@ -83,7 +98,7 @@ const Charts = ({ pieChartData }: ChartsProps) => {
               </PieChart>
             </ResponsiveContainer>
 
-            <CustomLegend pieChartData={pieChartData} />
+            <CustomLegend pieChartData={currentPieData} />
           </div>
         ) : (
           <NoDataFallback label="No data available for pie chart. Add transition" />
@@ -118,7 +133,11 @@ const Charts = ({ pieChartData }: ChartsProps) => {
                   dataKey="date"
                   tick={{ fontSize: 12 }}
                   axisLine={{ stroke: "#e5e7eb" }}
+                  tickFormatter={(date: string) =>
+                    new Date(date).getDate().toString()
+                  }
                 />
+
                 <YAxis
                   tick={{ fontSize: 12 }}
                   axisLine={{ stroke: "#e5e7eb" }}
@@ -162,7 +181,10 @@ const NoDataFallback = ({ label }: { label: string }) => {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-gray-500 bg-gray-50 rounded-xl shadow-inner animate-fadeIn">
       <div className="p-4 bg-white rounded-full shadow-sm mb-3">
-        <ChartArea size={isMobile ? 40 : 32} className="text-purple-400 animate-pulse" />
+        <ChartArea
+          size={isMobile ? 40 : 32}
+          className="text-purple-400 animate-pulse"
+        />
       </div>
       <p className="text-base font-medium text-center px-4">{label}</p>
     </div>

@@ -53,7 +53,7 @@ const Home: React.FC = () => {
 
             <SummaryCard summary={summary} />
             <ProgressSection />
-            <Charts pieChartData={pieChartData} />
+            <Charts />
           </div>
 
           <Transactions />

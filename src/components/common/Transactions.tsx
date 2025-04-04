@@ -39,9 +39,23 @@ type FilterItem = {
 
 const Transactions = () => {
   const allTransactions: Transaction[] = useSelector(userTransactions);
-
   const [transactions, setTransactions] =
     useState<Transaction[]>(allTransactions);
+  
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentTransactions = transactions.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  const totalPages = Math.ceil(transactions.length / itemsPerPage);
+
+
   const [activeFilters, setActiveFilters] = useState<FilterItem[]>([]);
 
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
@@ -187,9 +201,7 @@ const Transactions = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         <h2 className="text-lg font-bold text-gray-800">Recent Transactions</h2>
 
-        {}
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-          {}
           <div className="relative flex-1 sm:max-w-xs">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
@@ -248,7 +260,6 @@ const Transactions = () => {
         </div>
       </div>
 
-      {}
       {activeFilters.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
           {activeFilters.map((filter, index) => (
@@ -333,7 +344,7 @@ const Transactions = () => {
                 </td>
               </tr>
             ) : (
-              transactions.map((transaction) => (
+              currentTransactions.map((transaction) => (
                 <tr key={transaction.date}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {transaction.category}
@@ -360,6 +371,37 @@ const Transactions = () => {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* page */}
+
+      <div className="flex justify-between items-center mt-4">
+        <div className="text-sm text-gray-600">
+          Showing {indexOfFirstItem + 1}-
+          {Math.min(indexOfLastItem, transactions.length)} of{" "}
+          {transactions.length} transactions
+        </div>
+
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
 
 const AnimatedProgressBar = ({
   value = 65,
@@ -44,9 +46,22 @@ const AnimatedProgressBar = ({
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-2">
           <span className="text-lg font-semibold text-gray-800">{label}</span>
+          <span className="text-sm font-medium text-gray-500 rounded-3xl bg-gray-100 px-2 py-0.5 rounded-md shadow-inner">
+            ({currentValue.toFixed(1)} / {maxValue})
+          </span>
         </div>
         <div className="text-sm font-medium text-gray-600">
-          {currentValue.toFixed(1)} / {maxValue}
+          <span
+            className={`text-xs font-semibold px-2 py-1 rounded-full shadow-sm ${
+              percentage >= 75
+                ? "bg-green-100 text-green-700"
+                : percentage >= 40
+                ? "bg-yellow-100 text-yellow-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {percentage.toFixed(1)}%
+          </span>
         </div>
       </div>
 
@@ -55,10 +70,8 @@ const AnimatedProgressBar = ({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {}
         <div className="absolute inset-0 bg-gray-100 animate-pulse opacity-50"></div>
 
-        {}
         <div
           className={`h-full bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600 transition-all duration-700 ease-out relative`}
           style={{ width: `${percentage}%` }}
@@ -75,7 +88,6 @@ const AnimatedProgressBar = ({
             ></div>
           </div>
 
-          {}
           {[...Array(sparkleCount)].map((_, i) => (
             <div
               key={i}
@@ -91,7 +103,6 @@ const AnimatedProgressBar = ({
           ))}
         </div>
 
-        {}
         <div className="absolute inset-0 flex justify-between items-center px-2">
           {[20, 40, 60, 80].map((marker) => (
             <div
@@ -109,7 +120,6 @@ const AnimatedProgressBar = ({
         </div>
       </div>
 
-      {}
       <div className="flex justify-between mt-1 text-xs font-medium">
         <span className="text-red-500">Start</span>
         <span className="text-yellow-500">Quarter</span>
@@ -157,16 +167,22 @@ const AnimatedProgressBar = ({
 };
 
 const ProgressSection = () => {
+  const { totalExpenses, budget } = useSelector(
+    (state: RootState) => state.summary
+  );
+
+  const progress = (totalExpenses / budget) * 100;
+
   return (
-    <div className="w-full rounded-xl shadow-xs p-6 transition-all mb-4 bg-gradient-to-br from-purple-100/50  to-blue-100/50  via-gray-50/5 border border-indigo-100">
+    <div className="w-full rounded-xl shadow-xs p-6 transition-all mb-4 bg-gradient-to-br from-purple-100/50 to-blue-100/50 via-gray-50/5 border border-indigo-100">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-indigo-800">✨ Your Progress</h2>
       </div>
 
       <AnimatedProgressBar
-        value={65}
+        value={progress}
         maxValue={100}
-        label="Overall Completion"
+        label="Expense Tracker"
       />
     </div>
   );

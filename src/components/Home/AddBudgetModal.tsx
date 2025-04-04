@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { DollarSign } from "lucide-react";
+import { FilePenLine } from "lucide-react";
 import { selectSummary, setBudget } from "@/store/summary/summarySlice";
 
 export const AddBudgetModal = () => {
@@ -30,7 +30,7 @@ export const AddBudgetModal = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="flex items-center bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md shadow-sm transition-colors">
-          <DollarSign className=" h-5 w-5" />
+          <FilePenLine className=" h-5 w-5" />
           <span>Set Budget</span>
         </Button>
       </DialogTrigger>

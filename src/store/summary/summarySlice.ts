@@ -18,12 +18,16 @@ const initialState: SummaryState = {
 const summarySlice = createSlice({
   name: "summary",
   initialState,
-  reducers: {},
+  reducers: {
+    setBudget: (state, action) => {
+      state.budget = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder.addDefaultCase((state) => state);
   },
 });
 
-
 export default summarySlice.reducer;
+export const { setBudget } = summarySlice.actions;
 export const selectSummary = (state: RootState) => state.summary;

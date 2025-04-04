@@ -1,6 +1,7 @@
 import { DollarSign, Menu, PlusCircle } from "lucide-react";
 import { AddTransactionModal } from "../Home/AddTransactionModal";
 import { useState } from "react";
+import { AddBudgetModal } from "../Home/AddBudgetModal";
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +18,10 @@ function Header() {
               Spendly
             </h1>
           </div>
-          <AddTransactionModal />
+          <div className="flex justify-around items-center gap-2">
+            <AddTransactionModal />
+            <AddBudgetModal />
+          </div>
         </div>
       </header>
     </>

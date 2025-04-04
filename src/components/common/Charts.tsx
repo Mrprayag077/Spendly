@@ -16,6 +16,7 @@ import {
   CustomTooltip,
   dailyBudgetData,
 } from "./ChartExtras";
+import useBreakpoint from "@/hooks/breakpoint";
 
 interface ChartData {
   name: string;
@@ -27,6 +28,8 @@ interface ChartsProps {
 }
 
 const Charts = ({ pieChartData }: ChartsProps) => {
+  const isMobile = useBreakpoint("md");
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-3">
       {/* Pie Chart Card */}
@@ -34,8 +37,12 @@ const Charts = ({ pieChartData }: ChartsProps) => {
         <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
           Expense Breakdown
         </h2>
-        <div className="h-64 flex gap-0 items-center">
-          <ResponsiveContainer width="70%" height="100%">
+        <div
+          className={` flex gap-0 items-center ${
+            !isMobile ? "flex-col gap-2" : "h-64"
+          }`}
+        >
+          <ResponsiveContainer width={isMobile ? "70%" : "100%"} height="100%">
             <PieChart>
               <Pie
                 data={pieChartData}
@@ -49,7 +56,7 @@ const Charts = ({ pieChartData }: ChartsProps) => {
                 animationBegin={200}
                 animationDuration={800}
               >
-                {pieChartData.map((entry, index) => (
+                {pieChartData.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
@@ -61,6 +68,7 @@ const Charts = ({ pieChartData }: ChartsProps) => {
               <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
+
           <CustomLegend pieChartData={pieChartData} />
         </div>
       </div>

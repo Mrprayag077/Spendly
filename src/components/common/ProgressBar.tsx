@@ -11,7 +11,7 @@ const AnimatedProgressBar = ({
 
   useEffect(() => {
     let start = 0;
-    const increment = value / 30; // Smoother increments
+    const increment = value / 30;
     const timer = setInterval(() => {
       start += increment;
       if (start >= value) {
@@ -55,10 +55,10 @@ const AnimatedProgressBar = ({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {/* Background glow effect */}
+        {}
         <div className="absolute inset-0 bg-gray-100 animate-pulse opacity-50"></div>
 
-        {/* Main progress bar */}
+        {}
         <div
           className={`h-full bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600 transition-all duration-700 ease-out relative`}
           style={{ width: `${percentage}%` }}
@@ -75,7 +75,7 @@ const AnimatedProgressBar = ({
             ></div>
           </div>
 
-          {/* Multiple sparkle effects */}
+          {}
           {[...Array(sparkleCount)].map((_, i) => (
             <div
               key={i}
@@ -91,7 +91,7 @@ const AnimatedProgressBar = ({
           ))}
         </div>
 
-        {/* Progress markers */}
+        {}
         <div className="absolute inset-0 flex justify-between items-center px-2">
           {[20, 40, 60, 80].map((marker) => (
             <div
@@ -109,7 +109,7 @@ const AnimatedProgressBar = ({
         </div>
       </div>
 
-      {/* Milestone indicators below progress bar */}
+      {}
       <div className="flex justify-between mt-1 text-xs font-medium">
         <span className="text-red-500">Start</span>
         <span className="text-yellow-500">Quarter</span>
@@ -156,10 +156,9 @@ const AnimatedProgressBar = ({
   );
 };
 
-// Demo component with multiple progress bars
 const ProgressSection = () => {
   return (
-    <div className="w-full rounded-xl shadow-xs p-6 transition-all mb-4 bg-gradient-to-br from-purple-50 to-blue-50 border border-indigo-100">
+    <div className="w-full rounded-xl shadow-xs p-6 transition-all mb-4 bg-gradient-to-br from-purple-100/50  to-blue-100/50  via-gray-50/5 border border-indigo-100">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-indigo-800">✨ Your Progress</h2>
       </div>

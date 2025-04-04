@@ -1,3 +1,4 @@
+import { SummaryState } from "@/store/summary/summarySlice";
 import { PlusCircle, MinusCircle, Wallet, DollarSign } from "lucide-react";
 
 interface SummaryCardProps {
@@ -8,7 +9,7 @@ interface SummaryCardProps {
   textColor: string;
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({
+const Summary: React.FC<SummaryCardProps> = ({
   title,
   value,
   icon,
@@ -29,39 +30,34 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 };
 
 interface SummaryProps {
-  summary: {
-    totalIncome: number;
-    totalExpenses: number;
-    balance: number;
-    budget: number;
-  };
+  summary: SummaryState;
 }
 
-const Summary: React.FC<SummaryProps> = ({ summary }) => {
+function SummaryCard({ summary }: SummaryProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-      <SummaryCard
+      <Summary
         title="Total Income"
         value={summary.totalIncome}
         icon={<PlusCircle className="text-green-600" />}
         bgColor="bg-green-50"
         textColor="text-green-800"
       />
-      <SummaryCard
+      <Summary
         title="Total Expenses"
         value={summary.totalExpenses}
         icon={<MinusCircle className="text-red-600" />}
         bgColor="bg-red-50"
         textColor="text-red-800"
       />
-      <SummaryCard
+      <Summary
         title="Balance"
         value={summary.balance}
         icon={<Wallet className="text-blue-600" />}
         bgColor="bg-blue-50"
         textColor="text-blue-800"
       />
-      <SummaryCard
+      <Summary
         title="Monthly Budget"
         value={summary.budget}
         icon={<DollarSign className="text-purple-600" />}
@@ -70,6 +66,6 @@ const Summary: React.FC<SummaryProps> = ({ summary }) => {
       />
     </div>
   );
-};
+}
 
-export default Summary;
+export default SummaryCard;

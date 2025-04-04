@@ -1,4 +1,8 @@
-const Transactions = ({ transactions }: { transactions: any }) => {
+import { userTransactions } from "@/store/transactionSlice/transactionSlice";
+import { useSelector } from "react-redux";
+
+const Transactions = () => {
+  const transactions = useSelector(userTransactions);
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm mb-6">
       <h2 className="text-lg font-bold text-gray-800 mb-4">

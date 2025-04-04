@@ -4,11 +4,14 @@ export const ProfileIcon = ({
   height = "2.5rem",
   fontSize = "0.875rem",
 }: any) => {
-  const getInitials = (name: string = "") => {
+  const getInitials = (name: string | null | undefined = "") => {
+    if (typeof name !== "string") return "U";
+console.log(name)
     const parts = name.trim().split(" ");
     const firstInitial = parts[0]?.[0]?.toUpperCase() || "";
     const lastInitial =
       parts.length > 1 ? parts[parts.length - 1]?.[0]?.toUpperCase() : "";
+
     return `${firstInitial}${lastInitial}`;
   };
 

@@ -25,9 +25,9 @@ const transactionSlice = createSlice({
     addTransaction: (state, action: PayloadAction<Transaction>) => {
       state.transactions.push(action.payload);
     },
-    removeTransaction: (state, action: PayloadAction<string>) => {
+    removeTransaction: (state, action: PayloadAction<Transaction>) => {
       state.transactions = state.transactions.filter(
-        (t) => t.date !== action.payload
+        (t) => t.date !== action.payload.date
       );
     },
   },

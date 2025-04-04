@@ -1,29 +1,40 @@
+interface ProfileIconProps {
+  name: string;
+  width?: string;
+  height?: string;
+  fontSize?: string;
+}
+
 export const ProfileIcon = ({
   name,
   width = "2.5rem",
   height = "2.5rem",
   fontSize = "0.875rem",
-}: any) => {
-  const getInitials = (name: string | null | undefined = "") => {
-    if (typeof name !== "string") return "U";
-console.log(name)
-    const parts = name.trim().split(" ");
-    const firstInitial = parts[0]?.[0]?.toUpperCase() || "";
-    const lastInitial =
-      parts.length > 1 ? parts[parts.length - 1]?.[0]?.toUpperCase() : "";
+}: ProfileIconProps) => {
+  const getInitials = (fullName: string): string => {
+    console.log(fullName)
+    if (!fullName || typeof fullName !== "string") return "U";
 
+    const parts = fullName.trim().split(" ").filter(Boolean);
+
+    if (parts.length < 2) return parts[0][0]?.toUpperCase() ?? "U";
+
+    const firstInitial = parts[0][0]?.toUpperCase() ?? "";
+    const lastInitial = parts[parts.length - 1][0]?.toUpperCase() ?? "";
+console.log(`${firstInitial}${lastInitial}`);
     return `${firstInitial}${lastInitial}`;
   };
 
   return (
     <div
-      className={`inline-flex items-center justify-center rounded-full text-white font-medium shadow-md uppercase transition-transform duration-200 ease-in-out hover:scale-105`}
+      className="inline-flex items-center justify-center rounded-full text-white font-semibold shadow-md uppercase transition-transform duration-200 hover:scale-105"
       style={{
-        background: "linear-gradient(135deg, #0277bd, #4dd0e1)",
-        fontSize,
         width,
         height,
+        fontSize,
+        background: "linear-gradient(135deg, #0277bd, #4dd0e1)",
       }}
+      title={name}
     >
       {getInitials(name)}
     </div>

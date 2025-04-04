@@ -39,7 +39,7 @@ const Home: React.FC = () => {
             <div className="flex justify-between items-center -md:mb-2">
               <div className="flex justify-center items-center space-x-3 mb-4">
                 {userName && userName.name ? (
-                  <ProfileIcon name={userName} />
+                  <ProfileIcon name={userName.name} />
                 ) : (
                   <ProfileIcon name="User" />
                 )}

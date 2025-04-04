@@ -1,16 +1,415 @@
-import { userTransactions } from "@/store/transactionSlice/transactionSlice";
-import { Plus, Receipt } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Transaction,
+  userTransactions,
+} from "@/store/transactionSlice/transactionSlice";
+import {
+  Receipt,
+  Filter,
+  Calendar,
+  Search,
+  XCircle,
+  DollarSign,
+  Tag,
+} from "lucide-react";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import { AddTransactionModal } from "../Home/AddTransactionModal";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Slider } from "../ui/slider";
+import { format } from "date-fns";
+
+interface DateRange {
+  from: string;
+  to: string;
+}
+
+interface AmountRange {
+  min: number;
+  max: number;
+}
+type FilterItem = {
+  type: string;
+  label: string;
+  value: any;
+};
 
 const Transactions = () => {
-  const transactions = useSelector(userTransactions);
+  const allTransactions: Transaction[] = useSelector(userTransactions);
+
+  const [transactions, setTransactions] =
+    useState<Transaction[]>(allTransactions);
+  const [activeFilters, setActiveFilters] = useState<FilterItem[]>([]);
+
+  const [filterOpen, setFilterOpen] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const [dateRange, setDateRange] = useState<DateRange>({ from: "", to: "" });
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<("income" | "expense")[]>(
+    []
+  );
+  const [amountRange, setAmountRange] = useState<AmountRange>({
+    min: 0,
+    max: 10000,
+  });
+
+  const categories = [...new Set(allTransactions.map((t) => t.category))];
+
+  const maxPossibleAmount = Math.max(
+    ...allTransactions.map((t) => t.amount),
+    1000
+  );
+
+  useEffect(() => {
+    let filtered = allTransactions;
+    let appliedFilters: FilterItem[] = [];
+
+    if (searchTerm) {
+      filtered = filtered.filter((t) =>
+        t.category.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      appliedFilters.push({
+        type: "search",
+        label: `"${searchTerm}"`,
+        value: searchTerm,
+      });
+    }
+
+    if (dateRange.from && dateRange.to) {
+      const fromDate = new Date(dateRange.from);
+      const toDate = new Date(dateRange.to);
+      filtered = filtered.filter((t) => {
+        const transactionDate = new Date(t.date);
+        return transactionDate >= fromDate && transactionDate <= toDate;
+      });
+      appliedFilters.push({
+        type: "dateRange",
+        label: `${format(new Date(dateRange.from), "MMM d")} - ${format(
+          new Date(dateRange.to),
+          "MMM d"
+        )}`,
+        value: dateRange,
+      });
+    }
+
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter((t) =>
+        selectedCategories.includes(t.category)
+      );
+      appliedFilters.push({
+        type: "categories",
+        label: `${selectedCategories.length} categories`,
+        value: selectedCategories,
+      });
+    }
+
+    if (selectedTypes.length > 0) {
+      filtered = filtered.filter((t) => selectedTypes.includes(t.type));
+      appliedFilters.push({
+        type: "types",
+        label: selectedTypes.join(", "),
+        value: selectedTypes,
+      });
+    }
+
+    if (amountRange.min > 0 || amountRange.max < maxPossibleAmount) {
+      filtered = filtered.filter((t) => {
+        const amount = t.amount;
+        return amount >= amountRange.min && amount <= amountRange.max;
+      });
+      appliedFilters.push({
+        type: "amountRange",
+        label: `$${amountRange.min} - $${amountRange.max}`,
+        value: amountRange,
+      });
+    }
+
+    setTransactions(filtered);
+    setActiveFilters(appliedFilters);
+  }, [
+    searchTerm,
+    dateRange,
+    selectedCategories,
+    selectedTypes,
+    amountRange,
+    allTransactions,
+  ]);
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setDateRange({ from: "", to: "" });
+    setSelectedCategories([]);
+    setSelectedTypes([]);
+    setAmountRange({ min: 0, max: maxPossibleAmount });
+    setActiveFilters([]);
+  };
+
+  const removeFilter = (filterType: string) => {
+    switch (filterType) {
+      case "search":
+        setSearchTerm("");
+        break;
+      case "dateRange":
+        setDateRange({ from: "", to: "" });
+        break;
+      case "categories":
+        setSelectedCategories([]);
+        break;
+      case "types":
+        setSelectedTypes([]);
+        break;
+      case "amountRange":
+        setAmountRange({ min: 0, max: maxPossibleAmount });
+        break;
+      default:
+        break;
+    }
+  };
+
+  const toggleCategory = (category: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
+  };
+
+  const toggleType = (type: "income" | "expense") => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm mb-6">
-      <h2 className="text-lg font-bold text-gray-800 mb-4">
-        Recent Transactions
-      </h2>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+        <h2 className="text-lg font-bold text-gray-800">Recent Transactions</h2>
+
+        {}
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          {}
+          <div className="relative flex-1 sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search category"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 border-gray-200 w-full"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
+                <XCircle className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+              </button>
+            )}
+          </div>
+
+          <Popover open={filterOpen} onOpenChange={setFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={`flex items-center gap-2 shadow-sm transition-colors duration-200 ${
+                  activeFilters.length > 0
+                    ? "border-indigo-400 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+                    : "border-gray-200 hover:bg-gray-50"
+                }`}
+              >
+                <Filter className="h-4 w-4" />
+                Filters
+                {activeFilters.length > 0 && (
+                  <span className="bg-indigo-100 text-indigo-700 rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold shadow-inner">
+                    {activeFilters.length}
+                  </span>
+                )}
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent
+              className="w-96 p-0 rounded-2xl shadow-xl border border-indigo-100 bg-gradient-to-br from-white via-indigo-50 to-white"
+              align="end"
+            >
+              <div className="p-4 border-b border-indigo-100">
+                <h3 className="font-semibold text-indigo-800 text-lg">
+                  Filters
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  Narrow down your transactions
+                </p>
+              </div>
+
+              {}
+              <div className="p-4 border-b border-indigo-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <Calendar className="h-4 w-4 text-indigo-500" />
+                  <h4 className="font-medium text-gray-700">Date Range</h4>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">
+                      From
+                    </label>
+                    <Input
+                      type="date"
+                      value={dateRange.from}
+                      onChange={(e) =>
+                        setDateRange((prev) => ({
+                          ...prev,
+                          from: e.target.value,
+                        }))
+                      }
+                      className="text-sm border-indigo-200 focus:ring-indigo-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">
+                      To
+                    </label>
+                    <Input
+                      type="date"
+                      value={dateRange.to}
+                      onChange={(e) =>
+                        setDateRange((prev) => ({
+                          ...prev,
+                          to: e.target.value,
+                        }))
+                      }
+                      className="text-sm border-indigo-200 focus:ring-indigo-300"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {}
+              <div className="p-4 border-b border-indigo-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <Tag className="h-4 w-4 text-indigo-500" />
+                  <h4 className="font-medium text-gray-700">Categories</h4>
+                </div>
+                <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto pr-1 custom-scroll">
+                  {categories.map((category) => (
+                    <label
+                      key={category}
+                      className="flex items-center gap-2 text-sm text-gray-600"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories.includes(category)}
+                        onChange={() => toggleCategory(category)}
+                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      {category}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {}
+              <div className="p-4 border-b border-indigo-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <DollarSign className="h-4 w-4 text-indigo-500" />
+                  <h4 className="font-medium text-gray-700">
+                    Transaction Type
+                  </h4>
+                </div>
+                <div className="flex gap-3">
+                  <label className="flex items-center gap-2 text-sm text-gray-600">
+                    <input
+                      type="checkbox"
+                      checked={selectedTypes.includes("income")}
+                      onChange={() => toggleType("income")}
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    Income
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-gray-600">
+                    <input
+                      type="checkbox"
+                      checked={selectedTypes.includes("expense")}
+                      onChange={() => toggleType("expense")}
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    Expense
+                  </label>
+                </div>
+              </div>
+
+              {}
+              <div className="p-4 border-b border-indigo-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <DollarSign className="h-4 w-4 text-indigo-500" />
+                  <h4 className="font-medium text-gray-700">Amount Range</h4>
+                </div>
+                <div className="px-2">
+                  <Slider
+                    min={0}
+                    max={maxPossibleAmount}
+                    step={10}
+                    value={[amountRange.min, amountRange.max]}
+                    onValueChange={([min, max]) => setAmountRange({ min, max })}
+                    className="mb-4"
+                  />
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>₹{amountRange.min}</span>
+                  <span>₹{amountRange.max}</span>
+                </div>
+              </div>
+
+              {}
+              <div className="p-4 flex justify-between">
+                <Button
+                  variant="ghost"
+                  onClick={resetFilters}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  Reset All
+                </Button>
+                <Button
+                  onClick={() => setFilterOpen(false)}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+                >
+                  Apply Filters
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          <AddTransactionModal />
+        </div>
+      </div>
+
+      {}
+      {activeFilters.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {activeFilters.map((filter, index) => (
+            <div
+              key={index}
+              className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+            >
+              <span>{filter.label}</span>
+              <button
+                onClick={() => removeFilter(filter.type)}
+                className="hover:text-indigo-900"
+              >
+                <XCircle className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+
+          <button
+            onClick={resetFilters}
+            className="text-gray-500 hover:text-gray-700 text-sm underline"
+          >
+            Clear all
+          </button>
+        </div>
+      )}
+
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -33,24 +432,44 @@ const Transactions = () => {
             {transactions.length === 0 ? (
               <tr>
                 <td colSpan={12} className="">
-                  <div className="flex flex-col items-center   justify-center py-2 px-4 w-full">
+                  <div className="flex flex-col items-center justify-center py-10 px-4 w-full">
                     <div className="bg-gray-50 rounded-full p-4 mb-3">
                       <Receipt className="h-8 w-8 text-gray-400" />
                     </div>
-                    <p className="text-gray-700 font-medium mb-1">
-                      No transactions yet
-                    </p>
-                    <p className="text-gray-500 text-sm text-center w-full my-2 mb-4">
-                      Start adding income and expenses to track your financial
-                      activity.
-                    </p>
-                    <AddTransactionModal />
+                    {activeFilters.length > 0 ? (
+                      <>
+                        <p className="text-gray-700 font-medium mb-1">
+                          No matching transactions
+                        </p>
+                        <p className="text-gray-500 text-sm text-center w-full my-2 mb-4">
+                          Try adjusting your filters to see more results.
+                        </p>
+                        <Button
+                          onClick={resetFilters}
+                          variant="outline"
+                          className="mt-2"
+                        >
+                          Clear Filters
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-gray-700 font-medium mb-1">
+                          No transactions yet
+                        </p>
+                        <p className="text-gray-500 text-sm text-center w-full my-2 mb-4">
+                          Start adding income and expenses to track your
+                          financial activity.
+                        </p>
+                        <AddTransactionModal />
+                      </>
+                    )}
                   </div>
                 </td>
               </tr>
             ) : (
-              transactions.map((transaction: any) => (
-                <tr key={transaction.id}>
+              transactions.map((transaction) => (
+                <tr key={transaction.date}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {transaction.category}
                   </td>

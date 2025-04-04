@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
-interface Transaction {
+export interface Transaction {
   // id: string;
   type: "income" | "expense";
   category: string;
@@ -15,7 +15,34 @@ interface TransactionState {
 
 const initialState: TransactionState = {
   transactions:[]
-  //   [
+  
+};
+
+const transactionSlice = createSlice({
+  name: "transactions",
+  initialState,
+  reducers: {
+    addTransaction: (state, action: PayloadAction<Transaction>) => {
+      state.transactions.push(action.payload);
+    },
+    removeTransaction: (state, action: PayloadAction<string>) => {
+      state.transactions = state.transactions.filter(
+        (t) => t.date !== action.payload
+      );
+    },
+  },
+});
+
+// Selectors
+export const userTransactions = (state: RootState) =>
+  state.transactions.transactions;
+
+export const { addTransaction, removeTransaction } = transactionSlice.actions;
+export default transactionSlice.reducer;
+
+
+
+//   [
   //   {
   //     type: "income",
   //     category: "Salary",
@@ -71,26 +98,3 @@ const initialState: TransactionState = {
   //     date: "2025-04-04",
   //   },
   // ],
-};
-
-const transactionSlice = createSlice({
-  name: "transactions",
-  initialState,
-  reducers: {
-    addTransaction: (state, action: PayloadAction<Transaction>) => {
-      state.transactions.push(action.payload);
-    },
-    removeTransaction: (state, action: PayloadAction<string>) => {
-      state.transactions = state.transactions.filter(
-        (t) => t.date !== action.payload
-      );
-    },
-  },
-});
-
-// Selectors
-export const userTransactions = (state: RootState) =>
-  state.transactions.transactions;
-
-export const { addTransaction, removeTransaction } = transactionSlice.actions;
-export default transactionSlice.reducer;

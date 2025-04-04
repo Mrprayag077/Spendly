@@ -9,14 +9,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { PlusCircle } from "lucide-react";
-import { addTransaction, categoryType } from "@/store/transactionSlice/transactionSlice";
+import {
+  addTransaction,
+  categoryType,
+  userTransactions,
+} from "@/store/transactionSlice/transactionSlice";
+const defaultCategories = ["Groceries", "Rent", "Fuel", "Salary", "Shopping"];
 
 export const AddTransactionModal = () => {
   const dispatch = useDispatch();
+  const transaction = useSelector(userTransactions);
 
-  const [open, setOpen] = useState(false); 
+ const quickCategories =
+   transaction.length > 0
+     ? [...new Set(transaction.map((item) => item.category))].slice(0, 3)
+     : defaultCategories.slice(0, 3);
+
+  const [open, setOpen] = useState(false);
   const [type, setType] = useState<categoryType>("expense");
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
@@ -40,6 +51,11 @@ export const AddTransactionModal = () => {
     setDate("");
 
     setOpen(false);
+  };
+
+  const handleTodayClick = () => {
+    const today = new Date().toISOString().split("T")[0];
+    setDate(today);
   };
 
   return (
@@ -66,12 +82,30 @@ export const AddTransactionModal = () => {
             <option value="expense">Expense</option>
             <option value="income">Income</option>
           </select>
-          <Input
-            placeholder="Category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="border-indigo-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200"
-          />
+
+          {/* Category Input + Quick Select */}
+          <div className="space-y-1">
+            <Input
+              placeholder="Category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="border-indigo-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200"
+            />
+            <div className="flex gap-2 flex-wrap">
+              {quickCategories.slice(0, 3).map((cat) => (
+                <Button
+                  key={cat}
+                  variant="outline"
+                  className="px-3 py-1 text-xs rounded-full border-indigo-300 hover:bg-indigo-100 transition"
+                  onClick={() => setCategory(cat)}
+                >
+                  {cat}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Amount Input */}
           <Input
             placeholder="Amount"
             type="number"
@@ -79,13 +113,36 @@ export const AddTransactionModal = () => {
             onChange={(e) => setAmount(e.target.value)}
             className="border-indigo-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200"
           />
-          <Input
-            placeholder="Date"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="border-indigo-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200"
-          />
+
+          {/* Date Input + Today Badge */}
+          <div className="space-y-1">
+            <Input
+              placeholder="Date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="border-indigo-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200"
+            />
+            <div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleTodayClick}
+                className="text-indigo-600 text-xs px-2 py-0.5 bg-indigo-100 rounded-md hover:bg-indigo-200"
+              >
+                Set Today
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleTodayClick}
+                className="text-indigo-600 text-xs px-2 py-0.5 bg-indigo-100 rounded-md hover:bg-indigo-200"
+              >
+                Set Today
+              </Button>
+            </div>
+          </div>
         </div>
         <DialogFooter className="border-t border-indigo-100 pt-2">
           <Button

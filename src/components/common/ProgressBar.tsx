@@ -171,7 +171,7 @@ const ProgressSection = () => {
     (state: RootState) => state.summary
   );
 
-  const progress = (totalExpenses / budget) * 100;
+const progress = budget ? (totalExpenses / budget) * 100 : 0;
 
   return (
     <div className="w-full rounded-xl shadow-xs p-6 transition-all mb-4 bg-gradient-to-br from-purple-100/50 to-blue-100/50 via-gray-50/5 border border-indigo-100">

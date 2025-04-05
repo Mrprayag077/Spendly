@@ -4,11 +4,12 @@
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
+    scrollbar-color: #cbd5e1 transparent; /* gray-300 thumb, transparent track */
   }
 
   .scrollbar-thin::-webkit-scrollbar {
     width: 4px;
+    height: 4px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
@@ -16,9 +17,16 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: transparent;
+    background-color: #cbd5e1; /* Tailwind gray-300 */
+    border-radius: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8; /* Tailwind gray-400 for hover */
   }
 }
+
+
 
 .action-button {
   @apply flex items-center cursor-pointer text-white px-4 py-2 rounded-md shadow-sm transition-colors;

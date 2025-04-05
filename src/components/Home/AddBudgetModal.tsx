@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FilePenLine } from "lucide-react";
 import { selectSummary, setBudget } from "@/store/summary/summarySlice";
+import { setSettings } from "@/store/authSlice/authSlice";
 
 export const AddBudgetModal = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ export const AddBudgetModal = () => {
   const handleSubmit = () => {
     if (!newBudget || isNaN(parseFloat(newBudget))) return;
     dispatch(setBudget(parseFloat(newBudget)));
+    dispatch(setSettings(false));
     setOpen(false);
   };
 

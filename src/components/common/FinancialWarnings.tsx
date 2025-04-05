@@ -7,17 +7,22 @@ import {
   X,
 } from "lucide-react";
 import { useFinancialInsights } from "@/store/selectors/useFinancialWarnings";
+import { useDispatch, useSelector } from "react-redux";
+import { setSettings, showSuggestions } from "@/store/authSlice/authSlice";
 
 const FinancialInsights = () => {
+  const dispatch = useDispatch();
   const { warnings, positives } = useFinancialInsights();
   const [showWarnings, setShowWarnings] = useState(true);
   const [showPositives, setShowPositives] = useState(true);
-  const [dismissed, setDismissed] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const dismissed = useSelector(showSuggestions);
+
+  console.log(dismissed);
 
   useEffect(() => {
-    // Show component with animation after mount
     const timer = setTimeout(() => setIsVisible(true), 100);
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -114,7 +119,7 @@ const FinancialInsights = () => {
 
       <div className="flex justify-end mb-2">
         <button
-          onClick={() => setDismissed(true)}
+          onClick={() => dispatch(setSettings(true))}
           className="text-gray-500 cursor-pointer hover:text-gray-700 text-sm font-medium flex items-center gap-1 p-1 rounded hover:bg-gray-100 transition-colors duration-200"
         >
           <X size={14} />

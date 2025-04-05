@@ -31,7 +31,7 @@ const transactionSlice = createSlice({
       );
     },
     removeAllTransaction: (state) => {
-      state = initialState;
+      state.transactions = [];
     },
   },
 });

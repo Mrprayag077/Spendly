@@ -3,33 +3,47 @@ import { RootState } from "../store";
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: { id: string; name: string } | null;
+  user: { uuid: string | null; name: string | null; email: string | null };
+  settings: { showSuggestions: boolean };
 }
 
 const initialState: AuthState = {
-  isAuthenticated: true, //TODO: false
-  user: { id: "123", name: "Prayag Bhosale" }, //TODO: null
+  isAuthenticated: false,
+  user: { uuid: null, name: null, email: null },
+  settings: { showSuggestions: false },
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, action: PayloadAction<{ id: string; name: string }>) => {
+    login: (
+      state,
+      action: PayloadAction<{
+        uuid: string;
+        name: string | null;
+        email: string;
+      }>
+    ) => {
       state.isAuthenticated = true;
       state.user = action.payload;
     },
     logout: (state) => {
       state.isAuthenticated = false;
-      state.user = null;
+      state.user = { uuid: null, name: null, email: null };
+    },
+    setSettings: (state, action: PayloadAction<boolean>) => {
+      state.settings.showSuggestions = action.payload;
     },
   },
 });
 
-// Selectors
 export const selectIsAuthenticated = (state: RootState) =>
   state.auth.isAuthenticated;
 export const selectUser = (state: RootState) => state.auth.user;
+export const showSuggestions = (state: RootState) =>
+  state.auth.settings.showSuggestions;
+export const auth = (state: RootState) => state.auth;
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, setSettings } = authSlice.actions;
 export default authSlice.reducer;

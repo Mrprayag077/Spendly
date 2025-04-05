@@ -1,13 +1,30 @@
-import { Database, DollarSign, FilePenLine, Menu } from "lucide-react";
+import {
+  Database,
+  DollarSign,
+  FilePenLine,
+  LogOut,
+  Menu,
+  RotateCcw,
+} from "lucide-react";
 import { AddBudgetModal } from "../Home/AddBudgetModal";
 import { Button } from "../ui/button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { dummyTransactions } from "@/assets";
-import { addTransaction, removeAllTransaction } from "@/store/transactionSlice/transactionSlice";
+import {
+  addTransaction,
+  removeAllTransaction,
+  userTransactions,
+} from "@/store/transactionSlice/transactionSlice";
 import { setBudget } from "@/store/summary/summarySlice";
+import { handleLogout } from "@/utils/firebase";
+import { useNavigate } from "react-router-dom";
+import { logout } from "@/store/authSlice/authSlice";
 
 function Header() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const transactions = useSelector(userTransactions);
 
   const handleInjectDummyData = async () => {
     dispatch(removeAllTransaction());
@@ -18,6 +35,22 @@ function Header() {
       dispatch(setBudget(3000));
     }, 0);
   };
+
+  const handleResetData = async () => {
+    dispatch(removeAllTransaction());
+    dispatch(setBudget(0));
+  };
+
+  function logoutUser() {
+    try {
+      handleLogout();
+      dispatch(logout());
+    } catch (err) {
+      console.log("error", err);
+    } finally {
+      navigate("/login");
+    }
+  }
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-20">
@@ -34,12 +67,30 @@ function Header() {
         <div className="flex justify-around items-center gap-2">
           <AddBudgetModal />
 
+          {!(transactions.length > 0) ? (
+            <Button
+              className="action-button bg-blue-500 hover:bg-blue-600"
+              onClick={handleInjectDummyData}
+            >
+              <Database className=" h-5 w-5" />
+              <span>Add Dummy Data</span>
+            </Button>
+          ) : (
+            <Button
+              className="action-button bg-red-500 hover:bg-red-600"
+              onClick={handleResetData}
+            >
+              <RotateCcw className=" h-5 w-5" />
+              <span>Reset Data</span>
+            </Button>
+          )}
+
           <Button
-            className="action-button bg-blue-500 hover:bg-blue-600"
-            onClick={handleInjectDummyData}
+            className="action-button bg-red-500 hover:bg-red-600"
+            onClick={logoutUser}
           >
-            <Database className=" h-5 w-5" />
-            <span>Add Dummy Data</span>
+            <LogOut className=" h-5 w-5" />
+            <span>Logout</span>
           </Button>
         </div>
       </div>
@@ -48,4 +99,3 @@ function Header() {
 }
 
 export default Header;
-

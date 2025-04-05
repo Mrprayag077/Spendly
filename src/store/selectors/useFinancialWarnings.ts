@@ -10,9 +10,7 @@ export const useFinancialInsights = () => {
 
   const noIncome = totalIncome === 0;
   const noExpense = totalExpenses === 0;
-  const noBalance = balance === 0;
 
-  // Basic warnings
   if (noIncome) {
     warnings.push(
       "💼 You haven't added any income yet. Start by adding sources of income."
@@ -25,7 +23,6 @@ export const useFinancialInsights = () => {
     );
   }
 
-  // Dependent checks
   if (!noIncome && !noExpense) {
     if (totalExpenses > totalIncome) {
       warnings.push(

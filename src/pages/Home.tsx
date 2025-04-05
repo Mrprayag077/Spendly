@@ -3,16 +3,26 @@ import Header from "@/components/common/Header";
 import Transactions from "@/components/common/Transactions";
 import Charts from "@/components/common/Charts";
 import SummaryCard from "@/components/common/SummaryCard";
-import { ProfileIcon } from "@/utils/Profile";
+import { ProfileIcon } from "@/components/common/Profile";
 import ProgressSection from "@/components/common/ProgressBar";
-import { useSelector } from "react-redux";
-import { selectUser } from "@/store/authSlice/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectUser,
+  setSettings,
+  showSuggestions,
+} from "@/store/authSlice/authSlice";
 import { selectSummary } from "@/store/summary/summarySlice";
 import FinancialWarnings from "@/components/common/FinancialWarnings";
+import { ListCollapse } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { JSX } from "react/jsx-runtime";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
-const Home: React.FC = () => {
+const Home = () => {
+  const dispatch = useDispatch();
   const userName = useSelector(selectUser);
   const summary = useSelector(selectSummary);
+  const showSuggestion = useSelector(showSuggestions);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -23,9 +33,10 @@ const Home: React.FC = () => {
           <FinancialWarnings />
 
           <div className="bg-white rounded-2xl shadow-md p-2 lg:p-6 transition-all duration-500 mb-4">
-            <div className="flex justify-between items-center -md:mb-2">
-              <div className="flex justify-center items-center space-x-3 mb-4">
-                {userName && userName.name ? (
+            <div className="flex justify-between items-center md:mb-2 mb-4">
+              {/* Profile Section */}
+              <div className="flex items-center space-x-3">
+                {userName?.name ? (
                   <ProfileIcon name={userName.name} />
                 ) : (
                   <ProfileIcon name="User" />
@@ -34,6 +45,16 @@ const Home: React.FC = () => {
                   {userName?.name}
                 </h1>
               </div>
+
+              {showSuggestion && (
+                <Button
+                  onClick={() => dispatch(setSettings(false))}
+                  className="flex items-center gap-2 text-xs bg-yellow-100/50 border border-amber-400 shadow-sm cursor-pointer text-blue-500 hover:text-blue-800 transition-colors duration-200"
+                >
+                  <ListCollapse className="text-green-500" />
+                  Show suggestions
+                </Button>
+              )}
             </div>
 
             <SummaryCard summary={summary} />
@@ -48,4 +69,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default ProtectedRoute(Home);

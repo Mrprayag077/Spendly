@@ -7,12 +7,12 @@ interface ProfileIconProps {
 
 export const ProfileIcon = ({
   name,
-  width = "2.5rem",
-  height = "2.5rem",
+  width = "2rem",
+  height = "2rem",
   fontSize = "0.875rem",
 }: ProfileIconProps) => {
   const getInitials = (fullName: string): string => {
-    console.log(fullName)
+    console.log(fullName);
     if (!fullName || typeof fullName !== "string") return "U";
 
     const parts = fullName.trim().split(" ").filter(Boolean);
@@ -21,7 +21,7 @@ export const ProfileIcon = ({
 
     const firstInitial = parts[0][0]?.toUpperCase() ?? "";
     const lastInitial = parts[parts.length - 1][0]?.toUpperCase() ?? "";
-console.log(`${firstInitial}${lastInitial}`);
+    console.log(`${firstInitial}${lastInitial}`);
     return `${firstInitial}${lastInitial}`;
   };
 

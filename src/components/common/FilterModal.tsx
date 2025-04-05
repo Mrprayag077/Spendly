@@ -63,21 +63,27 @@ const FilterModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] w-[95vw] max-h-[90vh] p-0 overflow-hidden rounded-xl border border-indigo-100 shadow-xl bg-gradient-to-br from-white via-indigo-50 to-white">
-        <DialogHeader className="px-4 sm:px-6 sm:pt-6 lg:pt-1 pb-2">
-          <DialogTitle className="text-indigo-800 text-lg">Filters</DialogTitle>
+      <DialogContent
+        className="
+        w-[95vw] sm:max-w-[600px] max-h-[90vh] p-0 overflow-hidden
+        rounded-2xl border border-indigo-100 shadow-xl
+        bg-gradient-to-br from-white via-indigo-50 to-white
+        flex flex-col
+      "
+      >
+        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2">
+          <DialogTitle className="text-indigo-800 text-lg sm:text-xl">
+            Filters
+          </DialogTitle>
         </DialogHeader>
 
-        <div
-          className="divide-y divide-indigo-100 overflow-y-auto"
-          style={{ maxHeight: viewportHeight }}
-        >
-          <section className="p-3 sm:p-4">
-            <div className="flex items-center gap-1 mb-2 sm:mb-3">
+        <div className="flex-1 divide-y divide-indigo-100 overflow-y-auto scrollbar-thin">
+          <section className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 mb-3">
               <Calendar className="h-4 w-4 text-indigo-500" />
               <h4 className="font-medium text-gray-700">Date Range</h4>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">From</label>
                 <Input
@@ -109,35 +115,37 @@ const FilterModal = ({
             </div>
           </section>
 
-          <section className="p-3 sm:p-4">
-            <div className="flex items-center gap-2 mb-2 sm:mb-3">
-              <Tag className="h-4 w-4 text-indigo-500" />
-              <h4 className="font-medium text-gray-700">Categories</h4>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto pr-1">
-              {categories.map((category) => (
-                <label
-                  key={category}
-                  className="flex items-center gap-2 text-sm text-gray-600"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(category)}
-                    onChange={() => toggleCategory(category)}
-                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span className="truncate">{category}</span>
-                </label>
-              ))}
-            </div>
-          </section>
+          {categories.length > 0 && (
+            <section className="p-4 sm:p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Tag className="h-4 w-4 text-indigo-500" />
+                <h4 className="font-medium text-gray-700">Categories</h4>
+              </div>
+              <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-scroll scrollbar-thin pr-1">
+                {categories.map((category) => (
+                  <label
+                    key={category}
+                    className="flex items-center gap-2 text-sm text-gray-600"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedCategories.includes(category)}
+                      onChange={() => toggleCategory(category)}
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span className="truncate">{category}</span>
+                  </label>
+                ))}
+              </div>
+            </section>
+          )}
 
-          <section className="p-3 sm:p-4">
-            <div className="flex items-center gap-2 mb-2 sm:mb-3">
+          <section className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 mb-3">
               <DollarSign className="h-4 w-4 text-indigo-500" />
               <h4 className="font-medium text-gray-700">Transaction Type</h4>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3">
               {["income", "expense"].map((type) => (
                 <label
                   key={type}
@@ -155,8 +163,8 @@ const FilterModal = ({
             </div>
           </section>
 
-          <section className="p-3 sm:p-4">
-            <div className="flex items-center gap-2 mb-2 sm:mb-3">
+          <section className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 mb-3">
               <DollarSign className="h-4 w-4 text-indigo-500" />
               <h4 className="font-medium text-gray-700">Amount Range</h4>
             </div>
@@ -167,20 +175,19 @@ const FilterModal = ({
               value={[amountRange.min, amountRange.max]}
               onValueChange={([min, max]) => setAmountRange({ min, max })}
               className="
-    mb-4
-    bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full
-    [&_[role='slider']]:bg-white
-    [&_[role='slider']]:border-2 [&_[role='slider']]:border-indigo-500
-    [&_[role='slider']]:shadow-lg
-    [&_[role='slider']]:w-4 [&_[role='slider']]:h-4
-    [&_[role='slider']]:hover:bg-indigo-100
-    [&_[data-state='active']]:bg-indigo-200
-    [&_[data-state='active']]:border-indigo-700
-    [&_[role='slider']]:rounded-full
-    [&_[role='presentation']]:h-2 [&_[role='presentation']]:rounded-full
-  "
+              mb-4
+              bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full
+              [&_[role='slider']]:bg-white
+              [&_[role='slider']]:border-2 [&_[role='slider']]:border-indigo-500
+              [&_[role='slider']]:shadow-lg
+              [&_[role='slider']]:w-4 [&_[role='slider']]:h-4
+              [&_[role='slider']]:hover:bg-indigo-100
+              [&_[data-state='active']]:bg-indigo-200
+              [&_[data-state='active']]:border-indigo-700
+              [&_[role='slider']]:rounded-full
+              [&_[role='presentation']]:h-2 [&_[role='presentation']]:rounded-full
+            "
             />
-
             <div className="flex justify-between text-sm text-gray-600">
               <span>₹{amountRange.min}</span>
               <span>₹{amountRange.max}</span>
@@ -192,7 +199,7 @@ const FilterModal = ({
           <Button
             variant="ghost"
             onClick={resetFilters}
-            className="text-gray-600 cursor-pointer hover:text-gray-900"
+            className="text-gray-600 hover:text-gray-900"
           >
             Reset All
           </Button>
@@ -203,7 +210,6 @@ const FilterModal = ({
             Apply Filters
           </Button>
         </div>
-
       </DialogContent>
     </Dialog>
   );

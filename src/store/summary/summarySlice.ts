@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import { addTransaction, removeTransaction, Transaction } from "../transactionSlice/transactionSlice";
+import { addTransaction, removeAllTransaction, removeTransaction, Transaction } from "../transactionSlice/transactionSlice";
 
 export interface SummaryState {
   totalIncome: number;
@@ -35,7 +35,6 @@ const summarySlice = createSlice({
         } else {
           state.totalExpenses += transaction.amount;
         }
-        // state.balance = Math.max(0, state.totalIncome - state.totalExpenses);
         state.balance = state.totalIncome - state.totalExpenses;
       })
       .addCase(
@@ -57,7 +56,12 @@ const summarySlice = createSlice({
           }
           state.balance = Math.max(0, state.totalIncome - state.totalExpenses);
         }
-      );
+      )
+      .addCase(removeAllTransaction, (state) => {
+        state.totalIncome = 0;
+        state.totalExpenses = 0;
+        state.balance = 0;
+      });
   },
 });
 

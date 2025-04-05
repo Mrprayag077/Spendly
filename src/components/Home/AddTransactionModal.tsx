@@ -25,7 +25,7 @@ export const AddTransactionModal = () => {
 
   const quickCategories =
     transaction.length > 0
-      ? [...new Set(transaction.map((item) => item.category))].slice(0, 3)
+      ? [...new Set(transaction.map((item) => item.category))].slice(0, 5)
       : defaultCategories.slice(0, 3);
 
   const [open, setOpen] = useState(false);
@@ -55,10 +55,31 @@ export const AddTransactionModal = () => {
     toast.success("Transaction Added successfully!!");
   };
 
-  const handleTodayClick = () => {
-    const today = new Date().toISOString().split("T")[0];
-    setDate(today);
-  };
+const handleTodayClick = () => {
+  const today = new Date().toISOString().split("T")[0];
+  setDate(today);
+};
+
+const handleYesterdayClick = () => {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const formatted = yesterday.toISOString().split("T")[0];
+  setDate(formatted);
+};
+
+const handleThisWeekClick = () => {
+  const now = new Date();
+  const firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+  const formatted = firstDayOfWeek.toISOString().split("T")[0];
+  setDate(formatted);
+};
+
+const handleThisMonthClick = () => {
+  const now = new Date();
+  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const formatted = firstDayOfMonth.toISOString().split("T")[0];
+  setDate(formatted);
+};
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -95,17 +116,15 @@ export const AddTransactionModal = () => {
               onChange={(e) => setCategory(e.target.value)}
               className="border-indigo-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200"
             />
-            <div className="flex flex-wrap gap-2">
+            <div className="flex space-x-2 overflow-x-auto pb-2 no-scrollbar">
               {quickCategories.map((cat) => (
-                <Button
+                <button
                   key={cat}
-                  size="sm"
-                  variant="outline"
-                  className="text-xs border border-indigo-300 text-indigo-700 rounded-full hover:bg-indigo-100 transition"
+                  className="text-xs px-3 py-1 border border-indigo-300 text-indigo-700 rounded-full bg-white shadow-sm hover:bg-indigo-50 hover:text-indigo-800 transition-all duration-200 ease-in-out"
                   onClick={() => setCategory(cat)}
                 >
                   {cat}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
@@ -127,15 +146,44 @@ export const AddTransactionModal = () => {
               onChange={(e) => setDate(e.target.value)}
               className="border-indigo-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200"
             />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleTodayClick}
-              className="text-indigo-600 px-3 py-1 text-xs bg-indigo-100 hover:bg-indigo-200 rounded-md transition"
-            >
-              📅 Set Today
-            </Button>
+            <div className="flex space-x-2 overflow-x-auto no-scrollbar">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleTodayClick}
+                className="text-indigo-600 px-3 py-1 text-xs bg-indigo-100 hover:bg-indigo-200 rounded-md transition"
+              >
+                📅 Today
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleYesterdayClick}
+                className="text-indigo-600 px-3 py-1 text-xs bg-indigo-100 hover:bg-indigo-200 rounded-md transition"
+              >
+                📆 Yesterday
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleThisWeekClick}
+                className="text-indigo-600 px-3 py-1 text-xs bg-indigo-100 hover:bg-indigo-200 rounded-md transition"
+              >
+                🗓️ This Week
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleThisMonthClick}
+                className="text-indigo-600 px-3 py-1 text-xs bg-indigo-100 hover:bg-indigo-200 rounded-md transition"
+              >
+                🗓️ This Month
+              </Button>
+            </div>
           </div>
         </div>
 

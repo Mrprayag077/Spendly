@@ -86,11 +86,10 @@ function Header() {
           )}
 
           <Button
-            className="action-button bg-red-500 hover:bg-red-600"
+            className="action-button bg-purple-500 hover:bg-purple-600"
             onClick={logoutUser}
           >
             <LogOut className=" h-5 w-5" />
-            <span>Logout</span>
           </Button>
         </div>
       </div>

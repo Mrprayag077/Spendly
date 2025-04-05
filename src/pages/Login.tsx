@@ -1,10 +1,15 @@
 import { auth } from "@/lib/firebase";
 import { login } from "@/store/authSlice/authSlice";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { Eye, EyeOff, Lock } from "lucide-react";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { Eye, EyeOff, Loader, Lock } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const LoginPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -14,17 +19,21 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("123456789");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      console.log("User Email:", user.email);
-      console.log("User UID:", user.uid);
-      navigate("/");
-    }
-  }, [user, navigate]);
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
 
   const handleLogin = async () => {
+    setIsLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -32,7 +41,6 @@ const LoginPage: React.FC = () => {
         password
       );
       const loggedInUser = userCredential.user;
-      setUser(loggedInUser);
       dispatch(
         login({
           uuid: loggedInUser.uid,
@@ -40,20 +48,33 @@ const LoginPage: React.FC = () => {
           email: loggedInUser.email ?? "",
         })
       );
+      toast.success("logged in successfully!!");
     } catch (err: any) {
       setError(err.message);
+      toast.error(err.message);
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center px-6">
-      <div className="w-full max-w-md bg-white p-8 shadow-xl rounded-xl login-container fade-in">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          Log In to QuickRail
-        </h2>
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 bg-gray-50">
+      <div className="w-full max-w-md bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-gray-100 transform transition-all duration-300">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Log In to QuickRail
+          </h2>
+          <p className="text-gray-500 text-sm">
+            Enter your credentials to access your account
+          </p>
+        </div>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-md fade-in">
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-md animate-fade-in">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg
@@ -99,7 +120,8 @@ const LoginPage: React.FC = () => {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 pl-10 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 input-focus"
+              className="w-full border border-gray-300 pl-10 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -113,7 +135,7 @@ const LoginPage: React.FC = () => {
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="icon-md" />
+              <Lock className="h-5 w-5 text-gray-400" />
             </div>
             <input
               id="password"
@@ -121,13 +143,15 @@ const LoginPage: React.FC = () => {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 pl-10 pr-10 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 input-focus"
+              className="w-full border border-gray-300 pl-10 pr-10 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+              disabled={isLoading}
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="text-gray-400"
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                disabled={isLoading}
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -141,9 +165,17 @@ const LoginPage: React.FC = () => {
 
         <button
           onClick={handleLogin}
-          className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-300"
+          className="w-full bg-blue-600 cursor-pointer text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-300 flex items-center justify-center"
+          disabled={isLoading}
         >
-          Log In
+          {isLoading ? (
+            <>
+              <Loader className="w-5 h-5 mr-2 animate-spin" />
+              Logging in...
+            </>
+          ) : (
+            "Log In"
+          )}
         </button>
       </div>
     </div>

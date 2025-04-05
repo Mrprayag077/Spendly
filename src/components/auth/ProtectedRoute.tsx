@@ -1,31 +1,40 @@
-import { selectIsAuthenticated } from "@/store/authSlice/authSlice";
-import React from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { login } from "@/store/authSlice/authSlice";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import React from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function ProtectedRoute<T extends object>(
   Component: React.ComponentType<T>
 ) {
   return function WrappedComponent(props: T) {
-    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     React.useEffect(() => {
       const auth = getAuth();
-
       const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (!user || !isAuthenticated) {
+
+        console.log("user", user);
+        if (user) {
+        console.log("user if");
+
+          dispatch(
+            login({
+              uuid: user.uid,
+              name: user.displayName ?? "fistname lastname",
+              email: user.email ?? "",
+            })
+          );
+        } else {
+                  console.log("user else");
+
           navigate("/login");
         }
       });
 
       return () => unsubscribe();
-    }, [isAuthenticated, navigate]);
-
-    if (!isAuthenticated) {
-      return null;
-    }
+    }, [dispatch, navigate]);
 
     return <Component {...props} />;
   };

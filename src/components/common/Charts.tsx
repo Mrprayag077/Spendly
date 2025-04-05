@@ -48,7 +48,7 @@ const Charts = () => {
             <span className={showExpense ? "text-gray-900" : ""}>Expense</span>
             <button
               onClick={() => setShowExpense((prev) => !prev)}
-              className={`w-12 h-6 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ease-in-out ${
+              className={`w-12 h-6 flex items-center cursor-pointer bg-gray-300 rounded-full p-1 transition duration-300 ease-in-out ${
                 showExpense ? "bg-red-400" : "bg-green-400"
               }`}
             >

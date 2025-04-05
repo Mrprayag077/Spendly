@@ -15,7 +15,7 @@ interface TransactionState {
 }
 
 const initialState: TransactionState = {
-  transactions:[]
+  transactions: [],
 };
 
 const transactionSlice = createSlice({
@@ -30,6 +30,9 @@ const transactionSlice = createSlice({
         (t) => t.date !== action.payload.date
       );
     },
+    removeAllTransaction: (state) => {
+      state = initialState;
+    },
   },
 });
 
@@ -37,64 +40,6 @@ const transactionSlice = createSlice({
 export const userTransactions = (state: RootState) =>
   state.transactions.transactions;
 
-export const { addTransaction, removeTransaction } = transactionSlice.actions;
+export const { addTransaction, removeTransaction, removeAllTransaction } =
+  transactionSlice.actions;
 export default transactionSlice.reducer;
-
-
-
-//   [
-  //   {
-  //     type: "income",
-  //     category: "Salary",
-  //     amount: 5000,
-  //     date: "2025-04-01",
-  //   },
-  //   {
-  //     type: "income",
-  //     category: "Freelance",
-  //     amount: 280,
-  //     date: "2025-04-02",
-  //   },
-  //   {
-  //     type: "expense",
-  //     category: "Rent",
-  //     amount: 1500,
-  //     date: "2025-04-01",
-  //   },
-  //   {
-  //     type: "expense",
-  //     category: "Groceries",
-  //     amount: 450,
-  //     date: "2025-04-03",
-  //   },
-  //   {
-  //     type: "expense",
-  //     category: "Entertainment",
-  //     amount: 200,
-  //     date: "2025-04-04",
-  //   },
-  //   {
-  //     type: "expense",
-  //     category: "Utilities",
-  //     amount: 300,
-  //     date: "2025-04-02",
-  //   },
-  //   {
-  //     type: "expense",
-  //     category: "Transport",
-  //     amount: 250,
-  //     date: "2025-04-03",
-  //   },
-  //   {
-  //     type: "expense",
-  //     category: "Shopping",
-  //     amount: 350,
-  //     date: "2025-04-05",
-  //   },
-  //   {
-  //     type: "expense",
-  //     category: "Healthcare",
-  //     amount: 400,
-  //     date: "2025-04-04",
-  //   },
-  // ],

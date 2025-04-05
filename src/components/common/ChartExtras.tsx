@@ -34,9 +34,9 @@ export const CustomLegend: React.FC<{ pieChartData: PieChartData[] }> = ({
   const total = pieChartData.reduce((sum, entry) => sum + entry.value, 0);
 
   return (
-    <div className="flex flex-col gap-2 w-full max-w-[160px]">
-      <h3 className="text-sm font-medium text-gray-500 mb-2">Categories</h3>
-      <div className="overflow-y-scroll h-full mb-4 pb-4 scrollbar-thin">
+    <div className="flex flex-col gap-2 w-full mt-2 max-w-[160px]">
+      <h3 className="text-sm font-medium text-gray-500">Categories</h3>
+      <div className="overflow-y-scroll h-full mb-1 pb-1 scrollbar-thin">
         {pieChartData.map((entry, index) => {
           const percentage = ((entry.value / total) * 100).toFixed(1);
 

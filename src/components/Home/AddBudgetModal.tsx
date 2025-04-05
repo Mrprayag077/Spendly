@@ -29,7 +29,7 @@ export const AddBudgetModal = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md shadow-sm transition-colors">
+        <Button className="action-button bg-amber-500 hover:bg-amber-600">
           <FilePenLine className=" h-5 w-5" />
           <span>Set Budget</span>
         </Button>

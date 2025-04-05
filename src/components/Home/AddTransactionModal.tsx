@@ -16,16 +16,17 @@ import {
   categoryType,
   userTransactions,
 } from "@/store/transactionSlice/transactionSlice";
+import { toast } from "sonner";
 const defaultCategories = ["Groceries", "Rent", "Fuel", "Salary", "Shopping"];
 
 export const AddTransactionModal = () => {
   const dispatch = useDispatch();
   const transaction = useSelector(userTransactions);
 
- const quickCategories =
-   transaction.length > 0
-     ? [...new Set(transaction.map((item) => item.category))].slice(0, 3)
-     : defaultCategories.slice(0, 3);
+  const quickCategories =
+    transaction.length > 0
+      ? [...new Set(transaction.map((item) => item.category))].slice(0, 3)
+      : defaultCategories.slice(0, 3);
 
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<categoryType>("expense");
@@ -51,6 +52,7 @@ export const AddTransactionModal = () => {
     setDate("");
 
     setOpen(false);
+    toast.success("Transaction Added successfully!!");
   };
 
   const handleTodayClick = () => {
@@ -61,42 +63,45 @@ export const AddTransactionModal = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors shadow-sm">
+        <Button className="action-button bg-indigo-600 hover:bg-indigo-700">
           <PlusCircle className="h-5 w-5" />
           <span className="hidden sm:inline">New Transaction</span>
           <span className="sm:hidden">Add</span>
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-md bg-gradient-to-br from-blue-50 to-indigo-50 border border-indigo-100 shadow-lg">
-        <DialogHeader className="border-b border-indigo-100 pb-2">
-          <DialogTitle className="text-indigo-700 font-medium">
+        <DialogHeader className="mb-3">
+          <DialogTitle className="text-xl font-semibold text-indigo-700">
             Add New Transaction
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+
+        <div className="grid gap-4">
           <select
-            className="border border-indigo-200 p-2 rounded-md bg-white hover:border-indigo-400 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition-colors"
             value={type}
             onChange={(e) => setType(e.target.value as categoryType)}
+            className="w-full border border-indigo-200 p-2 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
           >
             <option value="expense">Expense</option>
             <option value="income">Income</option>
           </select>
 
-          {/* Category Input + Quick Select */}
-          <div className="space-y-1">
+          {/* Category + Quick Select */}
+          <div className="space-y-2">
             <Input
               placeholder="Category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="border-indigo-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200"
             />
-            <div className="flex gap-2 flex-wrap">
-              {quickCategories.slice(0, 3).map((cat) => (
+            <div className="flex flex-wrap gap-2">
+              {quickCategories.map((cat) => (
                 <Button
                   key={cat}
+                  size="sm"
                   variant="outline"
-                  className="px-3 py-1 text-xs rounded-full border-indigo-300 hover:bg-indigo-100 transition"
+                  className="text-xs border border-indigo-300 text-indigo-700 rounded-full hover:bg-indigo-100 transition"
                   onClick={() => setCategory(cat)}
                 >
                   {cat}
@@ -105,50 +110,40 @@ export const AddTransactionModal = () => {
             </div>
           </div>
 
-          {/* Amount Input */}
+          {/* Amount */}
           <Input
-            placeholder="Amount"
             type="number"
+            placeholder="Amount"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="border-indigo-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200"
           />
 
-          {/* Date Input + Today Badge */}
-          <div className="space-y-1">
+          {/* Date + Today Shortcut */}
+          <div className="space-y-2">
             <Input
-              placeholder="Date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               className="border-indigo-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200"
             />
-            <div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleTodayClick}
-                className="text-indigo-600 text-xs px-2 py-0.5 bg-indigo-100 rounded-md hover:bg-indigo-200"
-              >
-                Set Today
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleTodayClick}
-                className="text-indigo-600 text-xs px-2 py-0.5 bg-indigo-100 rounded-md hover:bg-indigo-200"
-              >
-                Set Today
-              </Button>
-            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleTodayClick}
+              className="text-indigo-600 px-3 py-1 text-xs bg-indigo-100 hover:bg-indigo-200 rounded-md transition"
+            >
+              📅 Set Today
+            </Button>
           </div>
         </div>
-        <DialogFooter className="border-t border-indigo-100 pt-2">
+
+        <DialogFooter className="mt-4 border-t border-indigo-100 pt-4">
           <Button
             type="button"
             onClick={handleSubmit}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-all"
           >
             Add Transaction
           </Button>

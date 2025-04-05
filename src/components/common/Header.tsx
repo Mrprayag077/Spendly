@@ -1,8 +1,24 @@
-import { DollarSign, Menu } from "lucide-react";
-import { AddTransactionModal } from "../Home/AddTransactionModal";
+import { Database, DollarSign, FilePenLine, Menu } from "lucide-react";
 import { AddBudgetModal } from "../Home/AddBudgetModal";
+import { Button } from "../ui/button";
+import { useDispatch } from "react-redux";
+import { dummyTransactions } from "@/assets";
+import { addTransaction, removeAllTransaction } from "@/store/transactionSlice/transactionSlice";
+import { setBudget } from "@/store/summary/summarySlice";
 
 function Header() {
+  const dispatch = useDispatch();
+
+  const handleInjectDummyData = async () => {
+    dispatch(removeAllTransaction());
+    setTimeout(() => {
+      dummyTransactions.forEach((transaction) => {
+        dispatch(addTransaction(transaction));
+      });
+      dispatch(setBudget(3000));
+    }, 0);
+  };
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -17,6 +33,14 @@ function Header() {
         </div>
         <div className="flex justify-around items-center gap-2">
           <AddBudgetModal />
+
+          <Button
+            className="action-button bg-blue-500 hover:bg-blue-600"
+            onClick={handleInjectDummyData}
+          >
+            <Database className=" h-5 w-5" />
+            <span>Add Dummy Data</span>
+          </Button>
         </div>
       </div>
     </header>
@@ -24,3 +48,4 @@ function Header() {
 }
 
 export default Header;
+

@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import Header from "@/components/common/Header";
 import Transactions from "@/components/common/Transactions";
 import Charts from "@/components/common/Charts";
@@ -7,22 +6,62 @@ import { ProfileIcon } from "@/components/common/Profile";
 import ProgressSection from "@/components/common/ProgressBar";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  auth,
+  login,
   selectUser,
   setSettings,
   showSuggestions,
 } from "@/store/authSlice/authSlice";
-import { selectSummary, setBudget } from "@/store/summary/summarySlice";
+import { selectSummary } from "@/store/summary/summarySlice";
 import FinancialWarnings from "@/components/common/FinancialWarnings";
 import { ListCollapse } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { dummyTransactions } from "@/assets";
 import { addTransaction } from "@/store/transactionSlice/transactionSlice";
+import { fetchUserData } from "@/services/api";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 const Home = () => {
   const dispatch = useDispatch();
   const userName = useSelector(selectUser);
+  const user = useSelector(selectUser);
   const summary = useSelector(selectSummary);
   const showSuggestion = useSelector(showSuggestions);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        if (user.uuid) {
+          const data = await fetchUserData(user.uuid);
+
+          if (data) {
+            dispatch(
+              login({
+                uuid: user.uuid,
+                name: data.profile?.name || "User",
+                email: data.profile?.email || "",
+              })
+            );
+            console.log(data);
+            toast.success("data fetched successfully!!");
+          }
+        } else {
+                console.log("jjjjj11");
+
+        }
+      } catch (err) {
+        console.log(err);
+        toast.error("Error occurred");
+      }
+    };
+
+    if (user.uuid && user.email) {
+      console.log(user.uuid, user.email);
+      init();
+    } else {
+      console.log("jjjjj");
+    }
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">

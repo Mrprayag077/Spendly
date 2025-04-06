@@ -18,8 +18,6 @@ const FinancialInsights = () => {
   const [isVisible, setIsVisible] = useState(false);
   const dismissed = useSelector(showSuggestions);
 
-  console.log(dismissed);
-
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
 

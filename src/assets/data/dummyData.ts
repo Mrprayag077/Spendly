@@ -16,7 +16,7 @@ export const dummyTransactions: Transaction[] = [
   // { type: "expense", category: "Utilities", amount: 300, date: "2025-04-02" },
 ];
 
-export const dummyDatt: { profile: any; transactions: Record<string, Transaction> } = {
+export const dummyDataTransaction: { profile: any; transactions: Record<string, Transaction> } = {
   profile: {
     balance: 0,
     budget: 1,

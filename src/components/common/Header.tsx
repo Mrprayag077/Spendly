@@ -2,12 +2,13 @@ import { Database, DollarSign, LogOut, Menu, RotateCcw } from "lucide-react";
 import { AddBudgetModal } from "../Home/AddBudgetModal";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import { dummyDatt, dummyTransactions } from "@/assets";
+import { dummyDataTransaction } from "@/assets";
 import {
   addTransaction,
   removeAllTransaction,
   selectTransactions,
   setBudget,
+  Transaction,
 } from "@/store/transactionSlice/transactionSlice";
 import { handleLogout } from "@/utils/firebase";
 import { useNavigate } from "react-router-dom";
@@ -22,9 +23,12 @@ function Header() {
   const handleInjectDummyData = async () => {
     dispatch(removeAllTransaction());
     setTimeout(() => {
-      Object.entries(dummyDatt.transactions).forEach(([id, transaction]) => {
+      Object.entries(
+        dummyDataTransaction.transactions as Record<string, Transaction>
+      ).forEach(([id, transaction]) => {
         dispatch(addTransaction({ id, transaction }));
       });
+
 
       dispatch(setBudget(3000));
     }, 0);

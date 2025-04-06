@@ -8,24 +8,42 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FilePenLine } from "lucide-react";
-import { setSettings } from "@/store/authSlice/authSlice";
-import { selectSummary, setBudget } from "@/store/transactionSlice/transactionSlice";
+import { selectUser, setSettings } from "@/store/authSlice/authSlice";
+import {
+  selectSummary,
+  setBudget,
+} from "@/store/transactionSlice/transactionSlice";
+import { updateProfileP } from "@/services/api";
+import { toast } from "sonner";
 
 export const AddBudgetModal = () => {
   const dispatch = useDispatch();
   const { budget } = useSelector(selectSummary);
+  const { uuid } = useSelector(selectUser);
 
   const [open, setOpen] = useState(false);
-  const [newBudget, setNewBudget] = useState(budget.toString());
+  const [newBudget, setNewBudget] = useState(budget);
+
+  useEffect(() => {
+    setNewBudget(budget);
+  }, [budget]);
 
   const handleSubmit = () => {
-    if (!newBudget || isNaN(parseFloat(newBudget))) return;
-    dispatch(setBudget(parseFloat(newBudget)));
-    dispatch(setSettings(false));
-    setOpen(false);
+    if (!newBudget || isNaN(newBudget) || !uuid) return;
+
+    try {
+      dispatch(setBudget(newBudget));
+
+      updateProfileP({ userUUID: uuid, profileData: { budget: newBudget } });
+      toast.success("Budget updated successfully!!");
+      dispatch(setSettings(false));
+      setOpen(false);
+    } catch (err) {
+      toast.error("Budget not updated");
+    }
   };
 
   return (
@@ -50,7 +68,7 @@ export const AddBudgetModal = () => {
             type="number"
             placeholder="Enter budget amount"
             value={newBudget}
-            onChange={(e) => setNewBudget(e.target.value)}
+            onChange={(e) => setNewBudget(Number(e.target.value))}
             className="border-amber-300 focus:ring-amber-200 focus:border-amber-500"
           />
         </div>

@@ -17,12 +17,14 @@ import {
   selectTransactions,
 } from "@/store/transactionSlice/transactionSlice";
 import { toast } from "sonner";
+import { selectUser } from "@/store/authSlice/authSlice";
+import { transactionApi } from "@/services/api";
 const defaultCategories = ["Groceries", "Rent", "Fuel", "Salary", "Shopping"];
 
 export const AddTransactionModal = () => {
   const dispatch = useDispatch();
   const transaction = useSelector(selectTransactions);
-
+  const user = useSelector(selectUser);
   const transactionList = Object.values(transaction);
 
   const quickCategories =
@@ -39,10 +41,13 @@ export const AddTransactionModal = () => {
 
   const handleSubmit = () => {
     if (!category || !amount || !date) return;
+   
+    
+    const transactionId = generateUniqueId();
 
     dispatch(
       addTransaction({
-        id: generateUniqueId(), // 🔥 you need to create this function!
+        id: transactionId,
         transaction: {
           type,
           category,
@@ -51,6 +56,18 @@ export const AddTransactionModal = () => {
         },
       })
     );
+
+    transactionApi({
+      userUUID: user.uuid,
+      action: "add_transaction",
+      transactionId: transactionId,
+      transactionData: {
+        type,
+        category,
+        amount: parseFloat(amount),
+        date,
+      },
+    });
 
     setType("expense");
     setCategory("");

@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { transactionApi, transactionApiProps } from "@/services/api";
 
 export type categoryType = "income" | "expense";
 
@@ -95,3 +96,4 @@ export const selectSummary = (state: RootState) => ({
   balance: state.app.balance,
   budget: state.app.budget,
 });
+

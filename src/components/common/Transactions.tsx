@@ -1,16 +1,12 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, SetStateAction } from "react";
 import {
   categoryType,
+  removeTransaction,
   selectTransactions,
   Transaction,
 } from "@/store/transactionSlice/transactionSlice";
-import {
-  Receipt,
-  Filter,
-  Search,
-  XCircle,
-} from "lucide-react";
-import { useSelector } from "react-redux";
+import { Receipt, Filter, Search, XCircle, Trash, Pencil, PlusCircle } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { AddTransactionModal } from "../Home/AddTransactionModal";
@@ -24,6 +20,9 @@ import {
   PaginationLink,
   PaginationNext,
 } from "../ui/pagination";
+import { toast } from "sonner";
+import { transactionApi } from "@/services/api";
+import { selectUser } from "@/store/authSlice/authSlice";
 
 interface DateRange {
   from: string;
@@ -41,11 +40,14 @@ type FilterItem = {
 };
 
 const Transactions = () => {
+  const dispatch = useDispatch();
   const allTransactionsObject = useSelector(selectTransactions);
-const allTransactions = useMemo(
-  () => Object.values(allTransactionsObject as Record<string, Transaction>),
-  [allTransactionsObject]
+  const allTransactions = useMemo(
+    () => Object.values(allTransactionsObject as Record<string, Transaction>),
+    [allTransactionsObject]
   );
+  const [open, setOpen] = useState(false);
+  const [openNew, setOpenNew] = useState(false);
 
   const [transactions, setTransactions] =
     useState<Transaction[]>(allTransactions);
@@ -191,6 +193,7 @@ const allTransactions = useMemo(
         break;
     }
   };
+  const user = useSelector(selectUser);
 
   const toggleCategory = (category: categoryType) => {
     setSelectedCategories((prev) =>
@@ -205,230 +208,299 @@ const allTransactions = useMemo(
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
   };
+  const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
+
+  const handleEdit = (transaction: any) => {
+    setEditingTransaction(transaction);
+    setOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this transaction?")) {
+      dispatch(removeTransaction(id));
+
+      transactionApi({
+        userUUID: user.uuid,
+        action: "delete_transaction",
+        transactionId: id,
+      });
+
+      toast.success("Transaction deleted successfully!");
+    }
+  };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm mb-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-        <h2 className="text-lg font-bold text-gray-800">Recent Transactions</h2>
+    <>
+      <div className="bg-white p-6 rounded-xl shadow-sm mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+          <h2 className="text-lg font-bold text-gray-800">
+            Recent Transactions
+          </h2>
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-          <div className="relative flex-1 sm:max-w-xs">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Search category"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 border-gray-200 w-full"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
-              >
-                <XCircle className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-              </button>
-            )}
-          </div>
-
-          <Button
-            onClick={() => setFilterOpen(true)}
-            variant="outline"
-            className={`flex items-center gap-2 shadow-sm ${
-              activeFilters.length > 0
-                ? "border-indigo-400 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
-                : "border-gray-200 hover:bg-gray-50"
-            }`}
-          >
-            <Filter className="h-4 w-4" />
-            Filters
-            {activeFilters.length > 0 && (
-              <span className="bg-indigo-100 text-indigo-700 rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold shadow-inner">
-                {activeFilters.length}
-              </span>
-            )}
-          </Button>
-
-          <FilterModal
-            open={filterOpen}
-            onOpenChange={setFilterOpen}
-            activeFilters={activeFilters}
-            dateRange={dateRange}
-            setDateRange={setDateRange}
-            categories={categories}
-            selectedCategories={selectedCategories}
-            toggleCategory={toggleCategory}
-            selectedTypes={selectedTypes}
-            toggleType={toggleType}
-            amountRange={amountRange}
-            setAmountRange={setAmountRange}
-            maxPossibleAmount={maxPossibleAmount}
-            resetFilters={resetFilters}
-          />
-
-          <AddTransactionModal />
-        </div>
-      </div>
-
-      {activeFilters.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {activeFilters.map((filter, index) => (
-            <div
-              key={index}
-              className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
-            >
-              <span>{filter.label}</span>
-              <button
-                onClick={() => removeFilter(filter.type)}
-                className="hover:text-indigo-900"
-              >
-                <XCircle className="h-4 w-4" />
-              </button>
-            </div>
-          ))}
-
-          <button
-            onClick={resetFilters}
-            className="text-gray-500 hover:text-gray-700 text-sm underline"
-          >
-            Clear all
-          </button>
-        </div>
-      )}
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Category
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Amount
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {transactions.length === 0 ? (
-              <tr>
-                <td colSpan={12} className="">
-                  <div className="flex flex-col items-center justify-center py-10 px-4 w-full">
-                    <div className="bg-gray-50 rounded-full p-4 mb-3">
-                      <Receipt className="h-8 w-8 text-gray-400" />
-                    </div>
-                    {activeFilters.length > 0 ? (
-                      <>
-                        <p className="text-gray-700 font-medium mb-1">
-                          No matching transactions
-                        </p>
-                        <p className="text-gray-500 text-sm text-center w-full my-2 mb-4">
-                          Try adjusting your filters to see more results.
-                        </p>
-                        <Button
-                          onClick={resetFilters}
-                          variant="outline"
-                          className="mt-2"
-                        >
-                          Clear Filters
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-gray-700 font-medium mb-1">
-                          No transactions yet
-                        </p>
-                        <p className="text-gray-500 text-sm text-center w-full my-2 mb-4">
-                          Start adding income and expenses to track your
-                          financial activity.
-                        </p>
-                        <AddTransactionModal />
-                      </>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              currentTransactions.map((transaction, index) => (
-                <tr key={`${transaction.date}-${index}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {transaction.category}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        transaction.type === "income"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {transaction.type}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${transaction.amount}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {transaction.date}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* page */}
-
-      <div className="my-2">
-        <Pagination>
-          <PaginationContent className="gap-1 text-xs">
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className={`h-7 px-2 text-xs ${
-                  currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                }`}
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:max-w-xs">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search category"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 border-gray-200 w-full"
               />
-            </PaginationItem>
-
-            {Array.from({ length: totalPages }, (_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  isActive={index + 1 === currentPage}
-                  onClick={() => setCurrentPage(index + 1)}
-                  className={`h-7 px-3 text-xs rounded-md ${
-                    index + 1 === currentPage
-                      ? "bg-indigo-100/10 text-indigo-700"
-                      : "hover:bg-gray-100"
-                  }`}
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
                 >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
+                  <XCircle className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
+            </div>
+
+            <Button
+              onClick={() => setFilterOpen(true)}
+              variant="outline"
+              className={`flex items-center gap-2 shadow-sm ${
+                activeFilters.length > 0
+                  ? "border-indigo-400 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+                  : "border-gray-200 hover:bg-gray-50"
+              }`}
+            >
+              <Filter className="h-4 w-4" />
+              Filters
+              {activeFilters.length > 0 && (
+                <span className="bg-indigo-100 text-indigo-700 rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold shadow-inner">
+                  {activeFilters.length}
+                </span>
+              )}
+            </Button>
+
+            <FilterModal
+              open={filterOpen}
+              onOpenChange={setFilterOpen}
+              activeFilters={activeFilters}
+              dateRange={dateRange}
+              setDateRange={setDateRange}
+              categories={categories}
+              selectedCategories={selectedCategories}
+              toggleCategory={toggleCategory}
+              selectedTypes={selectedTypes}
+              toggleType={toggleType}
+              amountRange={amountRange}
+              setAmountRange={setAmountRange}
+              maxPossibleAmount={maxPossibleAmount}
+              resetFilters={resetFilters}
+            />
+
+            <Button className="action-button bg-indigo-600 hover:bg-indigo-700" onClick={()=>setOpenNew(true)}>
+              <PlusCircle className="h-5 w-5" />
+              <span className="hidden sm:inline">New Transaction</span>
+              <span className="sm:hidden">Add</span>
+            </Button>
+          </div>
+        </div>
+
+        {activeFilters.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {activeFilters.map((filter, index) => (
+              <div
+                key={index}
+                className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+              >
+                <span>{filter.label}</span>
+                <button
+                  onClick={() => removeFilter(filter.type)}
+                  className="hover:text-indigo-900"
+                >
+                  <XCircle className="h-4 w-4" />
+                </button>
+              </div>
             ))}
 
-            <PaginationItem>
-              <PaginationNext
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                className={`h-7 px-2 text-xs ${
-                  currentPage === totalPages
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }`}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+            <button
+              onClick={resetFilters}
+              className="text-gray-500 hover:text-gray-700 text-sm underline"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Category
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Type
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Amount
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {transactions.length === 0 ? (
+                <tr>
+                  <td colSpan={12} className="">
+                    <div className="flex flex-col items-center justify-center py-10 px-4 w-full">
+                      <div className="bg-gray-50 rounded-full p-4 mb-3">
+                        <Receipt className="h-8 w-8 text-gray-400" />
+                      </div>
+                      {activeFilters.length > 0 ? (
+                        <>
+                          <p className="text-gray-700 font-medium mb-1">
+                            No matching transactions
+                          </p>
+                          <p className="text-gray-500 text-sm text-center w-full my-2 mb-4">
+                            Try adjusting your filters to see more results.
+                          </p>
+                          <Button
+                            onClick={resetFilters}
+                            variant="outline"
+                            className="mt-2"
+                          >
+                            Clear Filters
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-gray-700 font-medium mb-1">
+                            No transactions yet
+                          </p>
+                          <p className="text-gray-500 text-sm text-center w-full my-2 mb-4">
+                            Start adding income and expenses to track your
+                            financial activity.
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                currentTransactions.map((transaction, index) => (
+                  <tr key={`${transaction.date}-${index}`}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {transaction.category}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          transaction.type === "income"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {transaction.type}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      ${transaction.amount}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {transaction.date}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 flex items-center space-x-2">
+                      <button
+                        onClick={() => handleEdit(transaction)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(transaction.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* page */}
+
+        <div className="my-2">
+          <Pagination>
+            <PaginationContent className="gap-1 text-xs">
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  className={`h-7 px-2 text-xs ${
+                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                  }`}
+                />
+              </PaginationItem>
+
+              {Array.from({ length: totalPages }, (_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    isActive={index + 1 === currentPage}
+                    onClick={() => setCurrentPage(index + 1)}
+                    className={`h-7 px-3 text-xs rounded-md ${
+                      index + 1 === currentPage
+                        ? "bg-indigo-100/10 text-indigo-700"
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  className={`h-7 px-2 text-xs ${
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
-    </div>
+
+      {editingTransaction &&
+        editingTransaction.id &&
+        editingTransaction.type &&
+        editingTransaction.category &&
+        editingTransaction.amount &&
+        editingTransaction.date && (
+          <AddTransactionModal
+            isEdit
+            initialData={{
+              id: editingTransaction.id,
+              type: editingTransaction.type as categoryType,
+              category: editingTransaction.category,
+              amount: editingTransaction.amount,
+              date: editingTransaction.date,
+            }}
+            open={open}
+            onClose={() => setOpen(false)}
+          />
+        )}
+
+      <AddTransactionModal open={openNew} onClose={() => setOpenNew(false)} />
+    </>
   );
 };
 

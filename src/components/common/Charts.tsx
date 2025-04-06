@@ -14,7 +14,6 @@ import {
   COLORS,
   CustomLegend,
   CustomTooltip,
-  dailyBudgetData,
 } from "./ChartExtras";
 import useBreakpoint from "@/hooks/breakpoint";
 import { ChartArea } from "lucide-react";

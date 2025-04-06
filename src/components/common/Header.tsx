@@ -29,7 +29,6 @@ function Header() {
         dispatch(addTransaction({ id, transaction }));
       });
 
-
       dispatch(setBudget(3000));
     }, 0);
   };
@@ -65,29 +64,12 @@ function Header() {
         <div className="flex justify-around items-center gap-2">
           <AddBudgetModal />
 
-          {Object.keys(transactions).length === 0 ? (
-            <Button
-              className="action-button bg-blue-500 hover:bg-blue-600"
-              onClick={handleInjectDummyData}
-            >
-              <Database className=" h-5 w-5" />
-              <span>Add Dummy Data</span>
-            </Button>
-          ) : (
-            <Button
-              className="action-button bg-red-500 hover:bg-red-600"
-              onClick={handleResetData}
-            >
-              <RotateCcw className=" h-5 w-5" />
-              <span>Reset Data</span>
-            </Button>
-          )}
-
           <Button
             className="action-button bg-purple-500 hover:bg-purple-600"
             onClick={logoutUser}
           >
             <LogOut className=" h-5 w-5" />
+            Logout
           </Button>
         </div>
       </div>

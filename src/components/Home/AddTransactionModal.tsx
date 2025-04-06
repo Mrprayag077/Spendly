@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -10,10 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PlusCircle } from "lucide-react";
 import {
   addTransaction,
   categoryType,
+  editTransaction,
   selectTransactions,
 } from "@/store/transactionSlice/transactionSlice";
 import { toast } from "sonner";
@@ -21,61 +20,84 @@ import { selectUser } from "@/store/authSlice/authSlice";
 import { transactionApi } from "@/services/api";
 const defaultCategories = ["Groceries", "Rent", "Fuel", "Salary", "Shopping"];
 
-export const AddTransactionModal = () => {
+export const AddTransactionModal = ({
+  initialData,
+  isEdit = false,
+  open,
+  onClose,
+}: {
+  initialData?: {
+    id: string;
+    type: categoryType;
+    category: string;
+    amount: number;
+    date: string;
+  };
+  isEdit?: boolean;
+  open: boolean;
+  onClose: () => void;
+}) => {
   const dispatch = useDispatch();
   const transaction = useSelector(selectTransactions);
   const user = useSelector(selectUser);
   const transactionList = Object.values(transaction);
+
+  const [type, setType] = useState<categoryType>(
+    initialData?.type || "expense"
+  );
+  const [category, setCategory] = useState(initialData?.category || "");
+  const [amount, setAmount] = useState(initialData?.amount?.toString() || "");
+  const [date, setDate] = useState(initialData?.date || "");
 
   const quickCategories =
     transactionList.length > 0
       ? [...new Set(transactionList.map((item) => item.category))].slice(0, 5)
       : defaultCategories.slice(0, 3);
 
-  const [open, setOpen] = useState(false);
-  const [type, setType] = useState<categoryType>("expense");
-  const [category, setCategory] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
   const generateUniqueId = () => Math.random().toString(36).substr(2, 9);
 
   const handleSubmit = () => {
     if (!category || !amount || !date) return;
-   
-    
-    const transactionId = generateUniqueId();
 
-    dispatch(
-      addTransaction({
-        id: transactionId,
-        transaction: {
-          type,
-          category,
-          amount: parseFloat(amount),
-          date,
-        },
-      })
-    );
+    const transactionId = isEdit ? initialData?.id! : generateUniqueId();
 
-    transactionApi({
-      userUUID: user.uuid,
-      action: "add_transaction",
-      transactionId: transactionId,
-      transactionData: {
+    const payload = {
+      id: transactionId,
+      transaction: {
         type,
         category,
         amount: parseFloat(amount),
         date,
+        id: transactionId,
       },
-    });
+    };
 
+    if (isEdit) {
+      dispatch(editTransaction(payload));
+      transactionApi({
+        userUUID: user.uuid,
+        action: "edit_transaction",
+        transactionId,
+        transactionData: payload.transaction,
+      });
+      toast.success("Transaction Updated successfully!!");
+    } else {
+      dispatch(addTransaction(payload));
+      transactionApi({
+        userUUID: user.uuid,
+        action: "add_transaction",
+        transactionId,
+        transactionData: payload.transaction,
+      });
+      toast.success("Transaction Added successfully!!");
+    }
+
+    // Reset & Close
     setType("expense");
     setCategory("");
     setAmount("");
     setDate("");
-
-    setOpen(false);
-    toast.success("Transaction Added successfully!!");
+    onClose();
   };
 
   const handleTodayClick = () => {
@@ -105,19 +127,16 @@ export const AddTransactionModal = () => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="action-button bg-indigo-600 hover:bg-indigo-700">
-          <PlusCircle className="h-5 w-5" />
-          <span className="hidden sm:inline">New Transaction</span>
-          <span className="sm:hidden">Add</span>
-        </Button>
-      </DialogTrigger>
-
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
+      }}
+    >
       <DialogContent className="sm:max-w-md bg-gradient-to-br from-blue-50 to-indigo-50 border border-indigo-100 shadow-lg">
         <DialogHeader className="mb-3">
           <DialogTitle className="text-xl font-semibold text-indigo-700">
-            Add New Transaction
+            {isEdit ? "Edit Transaction" : "Add New Transaction"}
           </DialogTitle>
         </DialogHeader>
 

@@ -16,8 +16,9 @@ import FinancialWarnings from "@/components/common/FinancialWarnings";
 import { ListCollapse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { debouncedInit } from "@/services/api";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { selectSummary } from "@/store/transactionSlice/transactionSlice";
+import LoadingScreen from "@/components/common/Spinner";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -25,15 +26,22 @@ const Home = () => {
   const user = useSelector(selectUser);
   const summary = useSelector(selectSummary);
   const showSuggestion = useSelector(showSuggestions);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user.uuid && user.email) {
-      debouncedInit(user, dispatch);
-    } else {
-      console.log("jjjjj");
+    try {
+      if (user.uuid && user.email) {
+        setLoading(true);
+        debouncedInit(user, dispatch);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
     }
   }, [dispatch, user.uuid, user.email]);
 
+  if (loading) return <LoadingScreen />;
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       <Header />

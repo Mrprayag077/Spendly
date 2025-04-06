@@ -10,14 +10,15 @@ const AboutMe = () => {
 
   return (
     <div className="absolute bottom-4 right-8 ">
-      <button
-        className=" bg-indigo-600 rounded-3xl text-white items-center px-2 lg:px-3 py-2 
-          transition-colors duration-200 shadow-sm font-medium text-xs lg:text-sm cursor-pointer
-         "
-        onClick={toggleLinks}
-      >
-        <FolderGit2 className="icon" />
-      </button>
+      <div className="fixed bottom-4 right-8">
+        <button
+          className="bg-indigo-600 rounded-3xl text-white items-center px-2 lg:px-3 py-2 
+      transition-colors duration-200 shadow-sm font-medium text-xs lg:text-sm cursor-pointer"
+          onClick={toggleLinks}
+        >
+          <FolderGit2 className="icon" />
+        </button>
+      </div>
 
       {showLinks && (
         <div className="fixed inset-0 bg-black/75  bg-opacity-10 z-50 flex items-center justify-center">
@@ -45,37 +46,21 @@ const AboutMe = () => {
                     About the Developer Profile
                   </a>
                   <div className="text-sm lg:text-md font-bold mt-2 text-[#f6d970]">
-                    Tech Stack: Next.js, TypeScript, Firebase, TailwindCSS, API,
-                    Toast
+                    Tech Stack: React, Redux, Shadcn/ui TypeScript, Django,
+                    Firebase, TailwindCSS, API, Toast
                     <p className="text-lg text-white my-2">#Features:</p>
                     <ul className="list-disc list-inside space-y-1 mt-2 font-normal text-gray-300 text-left">
                       <li>
-                        Integrated
-                        <span className="font-semibold text-white">
-                          Realtime Database
-                        </span>
-                        for dynamic seat management.
+                        Positive and cautionary suggestions based on user
+                        transactions
+                      </li>
+                      <li>Personalized profile section for each user .</li>
+                      <li>
+                        Add, edit, and delete options for managing transactions.
                       </li>
                       <li>
-                        Implemented
-                        <span className="font-semibold text-white">
-                          real-time seat booking and availability tracking
-                        </span>
-                        .
-                      </li>
-                      <li>
-                        Secure user authentication with
-                        <span className="font-semibold text-white">
-                          Authentication
-                        </span>
-                        (Signup, Login, Logout, Reset).
-                      </li>
-                      <li>
-                        Implemented a
-                        <span className="font-semibold text-white">
-                          loading spinner
-                        </span>{" "}
-                        for better UX during data fetching.
+                        Filter transactions based on various parameters for
+                        better insights.
                       </li>
                       <li>
                         Toast notifications for
@@ -85,29 +70,10 @@ const AboutMe = () => {
                         messages using React.
                       </li>
                       <li>
-                        Designed a
-                        <span className="font-semibold text-white">
-                          {" "}
-                          fully responsive UI
-                        </span>{" "}
-                        for seamless booking on desktop and mobile.
+                        Pie chart for income vs. expenses. Combined charts with
+                        area and bar views for comprehensive analytics
                       </li>
-                      <li>
-                        Provided an
-                        <span className="font-semibold text-white">
-                          {" "}
-                          admin panel
-                        </span>{" "}
-                        to manually update seat reservations.
-                      </li>
-                      <li>
-                        Implemented
-                        <span className="font-semibold text-white">
-                          {" "}
-                          seat reset functionality
-                        </span>{" "}
-                        for easy management.
-                      </li>
+                      <li>Secure login feature powered by Firebase Auth</li>
                     </ul>
                   </div>
                 </div>

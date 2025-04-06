@@ -1,3 +1,4 @@
+import AboutMe from "@/components/common/AboutMe";
 import { auth } from "@/lib/firebase";
 import { login } from "@/store/authSlice/authSlice";
 import {
@@ -62,6 +63,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
+    <>
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 bg-gray-50">
       <div className="w-full max-w-md bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-gray-100 transform transition-all duration-300">
         <div className="text-center mb-8">
@@ -178,7 +180,10 @@ const LoginPage: React.FC = () => {
           )}
         </button>
       </div>
-    </div>
+      </div>
+      
+      <AboutMe />
+    </>
   );
 };
 

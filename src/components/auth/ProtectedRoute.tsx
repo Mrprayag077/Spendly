@@ -1,41 +1,56 @@
 import { login } from "@/store/authSlice/authSlice";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import LoadingScreen from "../common/Spinner";
 
-export default function ProtectedRoute<T extends object>(
-  Component: React.ComponentType<T>
-) {
-  return function WrappedComponent(props: T) {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+interface ProtectedRouteProps {
+  Component: React.ComponentType<any>;
+}
 
-    React.useEffect(() => {
-      const auth = getAuth();
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
+export default function ProtectedRoute({ Component }: ProtectedRouteProps) {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-        console.log("user", user);
-        if (user) {
-        console.log("user if");
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch(
+          login({
+            uuid: user.uid,
+            name: user.displayName ?? "user test",
+            email: user.email ?? "",
+          })
+        );
 
-          dispatch(
-            login({
-              uuid: user.uid,
-              name: user.displayName ?? "fistname lastname",
-              email: user.email ?? "",
-            })
-          );
-        } else {
-                  console.log("user else");
+        // ✅ Optional: Save to localStorage if you really need it
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            uuid: user.uid,
+            name: user.displayName ?? "user test",
+            email: user.email ?? "",
+          })
+        );
 
-          navigate("/login");
-        }
-      });
+        setIsAuthenticated(true);
+      } else {
+        // Clean up if logged out
+        localStorage.removeItem("user");
+        setIsAuthenticated(false);
+      }
+      setLoading(false);
+    });
 
-      return () => unsubscribe();
-    }, [dispatch, navigate]);
+    return () => unsubscribe();
+  }, [dispatch]);
 
-    return <Component {...props} />;
-  };
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  return isAuthenticated ? <Component /> : <Navigate to="/login" replace />;
 }

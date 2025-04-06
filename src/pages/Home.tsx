@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "@/components/common/Header";
 import Transactions from "@/components/common/Transactions";
 import Charts from "@/components/common/Charts";
@@ -11,12 +11,12 @@ import {
   setSettings,
   showSuggestions,
 } from "@/store/authSlice/authSlice";
-import { selectSummary } from "@/store/summary/summarySlice";
+import { selectSummary, setBudget } from "@/store/summary/summarySlice";
 import FinancialWarnings from "@/components/common/FinancialWarnings";
 import { ListCollapse } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { JSX } from "react/jsx-runtime";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { dummyTransactions } from "@/assets";
+import { addTransaction } from "@/store/transactionSlice/transactionSlice";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -69,4 +69,4 @@ const Home = () => {
   );
 };
 
-export default ProtectedRoute(Home);
+export default Home;

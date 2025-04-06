@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, SetStateAction } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   categoryType,
   removeTransaction,
@@ -293,7 +293,10 @@ const Transactions = () => {
               resetFilters={resetFilters}
             />
 
-            <Button className="action-button bg-indigo-600 hover:bg-indigo-700" onClick={()=>setOpenNew(true)}>
+            <Button
+              className="action-button bg-indigo-600 hover:bg-indigo-700"
+              onClick={() => setOpenNew(true)}
+            >
               <PlusCircle className="h-5 w-5" />
               <span className="hidden sm:inline">New Transaction</span>
               <span className="sm:hidden">Add</span>
@@ -331,19 +334,19 @@ const Transactions = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -389,10 +392,10 @@ const Transactions = () => {
               ) : (
                 currentTransactions.map((transaction, index) => (
                   <tr key={`${transaction.date}-${index}`}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {transaction.category}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <td className="px-4 py-4 whitespace-nowrap text-sm">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           transaction.type === "income"
@@ -403,24 +406,30 @@ const Transactions = () => {
                         {transaction.type}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                       ${transaction.amount}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {transaction.date}
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(transaction.date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 flex items-center space-x-2">
+                    <td className="px-1 py-4 whitespace-nowrap text-sm text-gray-900 flex items-center space-x-2">
                       <button
                         onClick={() => handleEdit(transaction)}
-                        className="text-blue-500 hover:text-blue-700"
+                        className="flex gap-1 justify-between items-center cursor-pointer text-blue-500 hover:text-blue-700"
                       >
                         <Pencil className="w-4 h-4" />
+                        Edit
                       </button>
                       <button
                         onClick={() => handleDelete(transaction.id)}
-                        className="text-red-500 hover:text-red-700"
+                        className="flex gap-1 justify-between items-center cursor-pointer text-red-500 hover:text-red-700"
                       >
                         <Trash className="w-4 h-4" />
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -495,7 +504,10 @@ const Transactions = () => {
               date: editingTransaction.date,
             }}
             open={open}
-            onClose={() => setOpen(false)}
+            onClose={() => {
+              setEditingTransaction(null);
+              setOpen(false);
+            }}
           />
         )}
 

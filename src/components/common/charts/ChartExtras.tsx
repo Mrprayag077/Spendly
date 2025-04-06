@@ -1,3 +1,4 @@
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { TooltipProps } from "recharts";
 
 interface PieChartData {
@@ -115,3 +116,49 @@ export const COLORS = [
   "#FF6B6B",
   "#6B8E23",
 ];
+
+
+export const BudgetComparisonTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload || !payload.length) return null;
+
+  const budgetValue = payload.find((p: any) => p.name === "budget")?.value || 0;
+  const actualValue = payload.find((p: any) => p.name === "actual")?.value || 0;
+  const difference = budgetValue - actualValue;
+  const isUnderBudget = difference > 0;
+
+  return (
+    <div className="bg-white p-3 shadow-md rounded-md border border-gray-100">
+      <p className="text-sm font-medium mb-1">
+        {new Date(label).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        })}
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
+          <span className="text-xs text-gray-600">Budget:</span>
+          <span className="text-sm font-medium">${budgetValue.toFixed(2)}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+          <span className="text-xs text-gray-600">Actual:</span>
+          <span className="text-sm font-medium">${actualValue.toFixed(2)}</span>
+        </div>
+      </div>
+      <div
+        className={`mt-2 text-sm font-medium flex items-center ${
+          isUnderBudget ? "text-green-600" : "text-red-600"
+        }`}
+      >
+        {isUnderBudget ? (
+          <ArrowDown className="w-3 h-3 mr-1" />
+        ) : (
+          <ArrowUp className="w-3 h-3 mr-1" />
+        )}
+        ${Math.abs(difference).toFixed(2)}{" "}
+        {isUnderBudget ? "under budget" : "over budget"}
+      </div>
+    </div>
+  );
+};

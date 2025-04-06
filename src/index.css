@@ -26,8 +26,10 @@
   }
 }
 
-
-
 .action-button {
   @apply flex items-center cursor-pointer text-white px-4 py-2 rounded-md shadow-sm transition-colors;
+}
+
+.combined-chart-button {
+  @apply bg-gray-100 text-gray-600 cursor-pointer hover:bg-gray-200;
 }

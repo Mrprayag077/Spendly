@@ -1,21 +1,14 @@
-import {
-  Database,
-  DollarSign,
-  FilePenLine,
-  LogOut,
-  Menu,
-  RotateCcw,
-} from "lucide-react";
+import { Database, DollarSign, LogOut, Menu, RotateCcw } from "lucide-react";
 import { AddBudgetModal } from "../Home/AddBudgetModal";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import { dummyTransactions } from "@/assets";
+import { dummyDatt, dummyTransactions } from "@/assets";
 import {
   addTransaction,
   removeAllTransaction,
-  userTransactions,
+  selectTransactions,
+  setBudget,
 } from "@/store/transactionSlice/transactionSlice";
-import { setBudget } from "@/store/summary/summarySlice";
 import { handleLogout } from "@/utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/store/authSlice/authSlice";
@@ -24,14 +17,15 @@ function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const transactions = useSelector(userTransactions);
+  const transactions = useSelector(selectTransactions);
 
   const handleInjectDummyData = async () => {
     dispatch(removeAllTransaction());
     setTimeout(() => {
-      dummyTransactions.forEach((transaction) => {
-        dispatch(addTransaction(transaction));
+      Object.entries(dummyDatt.transactions).forEach(([id, transaction]) => {
+        dispatch(addTransaction({ id, transaction }));
       });
+
       dispatch(setBudget(3000));
     }, 0);
   };
@@ -67,7 +61,7 @@ function Header() {
         <div className="flex justify-around items-center gap-2">
           <AddBudgetModal />
 
-          {!(transactions.length > 0) ? (
+          {Object.keys(transactions).length === 0 ? (
             <Button
               className="action-button bg-blue-500 hover:bg-blue-600"
               onClick={handleInjectDummyData}

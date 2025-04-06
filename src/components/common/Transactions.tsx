@@ -1,24 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   categoryType,
+  selectTransactions,
   Transaction,
-  userTransactions,
 } from "@/store/transactionSlice/transactionSlice";
 import {
   Receipt,
   Filter,
-  Calendar,
   Search,
   XCircle,
-  DollarSign,
-  Tag,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { AddTransactionModal } from "../Home/AddTransactionModal";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Slider } from "../ui/slider";
 import { format } from "date-fns";
 import FilterModal from "./FilterModal";
 import {
@@ -46,7 +41,12 @@ type FilterItem = {
 };
 
 const Transactions = () => {
-  const allTransactions: Transaction[] = useSelector(userTransactions);
+  const allTransactionsObject = useSelector(selectTransactions);
+const allTransactions = useMemo(
+  () => Object.values(allTransactionsObject as Record<string, Transaction>),
+  [allTransactionsObject]
+  );
+
   const [transactions, setTransactions] =
     useState<Transaction[]>(allTransactions);
 
@@ -77,9 +77,9 @@ const Transactions = () => {
 
   const categories = [...new Set(allTransactions.map((t) => t.category))];
 
-  const maxPossibleAmount = Math.max(
-    ...allTransactions.map((t) => t.amount),
-    1000
+  const maxPossibleAmount = useMemo(
+    () => Math.max(...allTransactions.map((t) => t.amount), 1000),
+    [allTransactions]
   );
 
   useEffect(() => {
@@ -126,7 +126,9 @@ const Transactions = () => {
     }
 
     if (selectedTypes.length > 0) {
-      filtered = filtered.filter((t) => selectedTypes.includes(t.type));
+      filtered = filtered.filter((t) =>
+        selectedTypes.includes(t.type as categoryType)
+      );
       appliedFilters.push({
         type: "types",
         label: selectedTypes.join(", "),
@@ -148,12 +150,14 @@ const Transactions = () => {
 
     setTransactions(filtered);
     setActiveFilters(appliedFilters);
+    setCurrentPage(1); // Reset page to 1 when filters change
   }, [
     searchTerm,
     dateRange,
     selectedCategories,
     selectedTypes,
     amountRange,
+    maxPossibleAmount,
     allTransactions,
   ]);
 
@@ -188,7 +192,7 @@ const Transactions = () => {
     }
   };
 
-  const toggleCategory = (category: string) => {
+  const toggleCategory = (category: categoryType) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((c) => c !== category)
@@ -350,8 +354,8 @@ const Transactions = () => {
                 </td>
               </tr>
             ) : (
-              currentTransactions.map((transaction) => (
-                <tr key={transaction.date}>
+              currentTransactions.map((transaction, index) => (
+                <tr key={`${transaction.date}-${index}`}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {transaction.category}
                   </td>

@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { selectSummary } from "../summary/summarySlice";
+import { selectSummary } from "../transactionSlice/transactionSlice";
 
 export const useFinancialInsights = () => {
   const { totalIncome, totalExpenses, balance, budget } =

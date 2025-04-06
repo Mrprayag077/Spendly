@@ -1,4 +1,3 @@
-import { SummaryState } from "@/store/summary/summarySlice";
 import { PlusCircle, MinusCircle, Wallet, DollarSign } from "lucide-react";
 
 interface SummaryCardProps {
@@ -30,7 +29,7 @@ const Summary: React.FC<SummaryCardProps> = ({
 };
 
 interface SummaryProps {
-  summary: SummaryState;
+  summary: any;
 }
 
 function SummaryCard({ summary }: SummaryProps) {

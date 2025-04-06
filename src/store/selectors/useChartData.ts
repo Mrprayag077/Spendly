@@ -1,11 +1,14 @@
 import { useSelector } from "react-redux";
-import { selectSummary } from "../summary/summarySlice";
-import { Transaction, userTransactions } from "../transactionSlice/transactionSlice";
+import { selectSummary, selectTransactions } from "../transactionSlice/transactionSlice";
 
 export const useChartData = () => {
-  const { totalIncome, totalExpenses, budget, balance } =
+  const { budget } =
     useSelector(selectSummary);
-  const transactions: Transaction[] = useSelector(userTransactions);
+
+  const transactionsRecord = useSelector(selectTransactions);
+
+  // Convert Record<string, Transaction> to array of transactions
+  const transactions = Object.values(transactionsRecord);
 
   const expenseCategories: Record<string, number> = {};
   const incomeCategories: Record<string, number> = {};
@@ -15,8 +18,8 @@ export const useChartData = () => {
       expenseCategories[txn.category] =
         (expenseCategories[txn.category] || 0) + txn.amount;
     } else if (txn.type === "income") {
-        incomeCategories[txn.category] =
-          (incomeCategories[txn.category] || 0) + txn.amount;
+      incomeCategories[txn.category] =
+        (incomeCategories[txn.category] || 0) + txn.amount;
     }
   });
 
@@ -25,14 +28,14 @@ export const useChartData = () => {
       name,
       value,
     })
-    );
-    
-      const pieChartIncomeData = Object.entries(incomeCategories).map(
-        ([name, value]) => ({
-          name,
-          value,
-        })
-      );
+  );
+
+  const pieChartIncomeData = Object.entries(incomeCategories).map(
+    ([name, value]) => ({
+      name,
+      value,
+    })
+  );
 
   const dailyBudgetData = transactions.reduce((acc, txn) => {
     const date = new Date(txn.date).toISOString().split("T")[0];

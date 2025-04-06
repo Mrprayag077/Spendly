@@ -14,18 +14,20 @@ import { PlusCircle } from "lucide-react";
 import {
   addTransaction,
   categoryType,
-  userTransactions,
+  selectTransactions,
 } from "@/store/transactionSlice/transactionSlice";
 import { toast } from "sonner";
 const defaultCategories = ["Groceries", "Rent", "Fuel", "Salary", "Shopping"];
 
 export const AddTransactionModal = () => {
   const dispatch = useDispatch();
-  const transaction = useSelector(userTransactions);
+  const transaction = useSelector(selectTransactions);
+
+  const transactionList = Object.values(transaction);
 
   const quickCategories =
-    transaction.length > 0
-      ? [...new Set(transaction.map((item) => item.category))].slice(0, 5)
+    transactionList.length > 0
+      ? [...new Set(transactionList.map((item) => item.category))].slice(0, 5)
       : defaultCategories.slice(0, 3);
 
   const [open, setOpen] = useState(false);
@@ -33,16 +35,20 @@ export const AddTransactionModal = () => {
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
+  const generateUniqueId = () => Math.random().toString(36).substr(2, 9);
 
   const handleSubmit = () => {
     if (!category || !amount || !date) return;
 
     dispatch(
       addTransaction({
-        type,
-        category,
-        amount: parseFloat(amount),
-        date,
+        id: generateUniqueId(), // 🔥 you need to create this function!
+        transaction: {
+          type,
+          category,
+          amount: parseFloat(amount),
+          date,
+        },
       })
     );
 
@@ -55,31 +61,31 @@ export const AddTransactionModal = () => {
     toast.success("Transaction Added successfully!!");
   };
 
-const handleTodayClick = () => {
-  const today = new Date().toISOString().split("T")[0];
-  setDate(today);
-};
+  const handleTodayClick = () => {
+    const today = new Date().toISOString().split("T")[0];
+    setDate(today);
+  };
 
-const handleYesterdayClick = () => {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const formatted = yesterday.toISOString().split("T")[0];
-  setDate(formatted);
-};
+  const handleYesterdayClick = () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const formatted = yesterday.toISOString().split("T")[0];
+    setDate(formatted);
+  };
 
-const handleThisWeekClick = () => {
-  const now = new Date();
-  const firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-  const formatted = firstDayOfWeek.toISOString().split("T")[0];
-  setDate(formatted);
-};
+  const handleThisWeekClick = () => {
+    const now = new Date();
+    const firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+    const formatted = firstDayOfWeek.toISOString().split("T")[0];
+    setDate(formatted);
+  };
 
-const handleThisMonthClick = () => {
-  const now = new Date();
-  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const formatted = firstDayOfMonth.toISOString().split("T")[0];
-  setDate(formatted);
-};
+  const handleThisMonthClick = () => {
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const formatted = firstDayOfMonth.toISOString().split("T")[0];
+    setDate(formatted);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

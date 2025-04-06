@@ -20,7 +20,7 @@ interface FilterModalProps {
   setDateRange: Function;
   categories: string[];
   selectedCategories: string[];
-  toggleCategory: (category: string) => void;
+  toggleCategory: (category: categoryType) => void;
   selectedTypes: categoryType[];
   toggleType: (type: categoryType) => void;
   amountRange: { min: number; max: number };
@@ -45,21 +45,6 @@ const FilterModal = ({
   maxPossibleAmount,
   resetFilters,
 }: FilterModalProps) => {
-  const [viewportHeight, setViewportHeight] = useState("80vh");
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setViewportHeight("70vh");
-      } else {
-        setViewportHeight("80vh");
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -75,6 +60,10 @@ const FilterModal = ({
           <DialogTitle className="text-indigo-800 text-lg sm:text-xl">
             Filters
           </DialogTitle>
+          <DialogDescription className="text-indigo-600">
+              Apply filters to narrow down your transactions.
+         
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 divide-y divide-indigo-100 overflow-y-auto scrollbar-thin">
@@ -207,7 +196,7 @@ const FilterModal = ({
             onClick={() => onOpenChange(false)}
             className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
           >
-            Apply Filters
+            Close
           </Button>
         </div>
       </DialogContent>

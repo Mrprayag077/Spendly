@@ -12,14 +12,12 @@ import {
   setSettings,
   showSuggestions,
 } from "@/store/authSlice/authSlice";
-import { selectSummary } from "@/store/summary/summarySlice";
 import FinancialWarnings from "@/components/common/FinancialWarnings";
 import { ListCollapse } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { addTransaction } from "@/store/transactionSlice/transactionSlice";
-import { fetchUserData } from "@/services/api";
+import { debouncedInit } from "@/services/api";
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { selectSummary } from "@/store/transactionSlice/transactionSlice";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -29,39 +27,12 @@ const Home = () => {
   const showSuggestion = useSelector(showSuggestions);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        if (user.uuid) {
-          const data = await fetchUserData(user.uuid);
-
-          if (data) {
-            dispatch(
-              login({
-                uuid: user.uuid,
-                name: data.profile?.name || "User",
-                email: data.profile?.email || "",
-              })
-            );
-            console.log(data);
-            toast.success("data fetched successfully!!");
-          }
-        } else {
-                console.log("jjjjj11");
-
-        }
-      } catch (err) {
-        console.log(err);
-        toast.error("Error occurred");
-      }
-    };
-
     if (user.uuid && user.email) {
-      console.log(user.uuid, user.email);
-      init();
+      debouncedInit(user, dispatch);
     } else {
       console.log("jjjjj");
     }
-  }, [dispatch]);
+  }, [dispatch, user.uuid, user.email]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">

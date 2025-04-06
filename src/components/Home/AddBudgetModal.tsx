@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FilePenLine } from "lucide-react";
-import { selectSummary, setBudget } from "@/store/summary/summarySlice";
 import { setSettings } from "@/store/authSlice/authSlice";
+import { selectSummary, setBudget } from "@/store/transactionSlice/transactionSlice";
 
 export const AddBudgetModal = () => {
   const dispatch = useDispatch();

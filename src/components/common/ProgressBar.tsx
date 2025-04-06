@@ -168,7 +168,7 @@ const AnimatedProgressBar = ({
 
 const ProgressSection = () => {
   const { totalExpenses, budget } = useSelector(
-    (state: RootState) => state.summary
+    (state: RootState) => state.app
   );
 
 const progress = budget ? (totalExpenses / budget) * 100 : 0;

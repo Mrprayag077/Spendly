@@ -90,7 +90,7 @@ const AboutMe = () => {
                     <Linkedin className="icon-md" />
                   </a>
                   <a
-                    href="https://github.com/Mrprayag077/AeroPath"
+                    href="https://github.com/Mrprayag077/Spendly"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex justify-center items-center w-14 h-14 bg-black hover:bg-gray-700 rounded-full transition-all duration-300"

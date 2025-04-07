@@ -17,7 +17,10 @@ import { ListCollapse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { debouncedInit } from "@/services/api";
 import { useEffect, useState } from "react";
-import { selectSummary } from "@/store/transactionSlice/transactionSlice";
+import {
+  removeAllTransaction,
+  selectSummary,
+} from "@/store/transactionSlice/transactionSlice";
 import LoadingScreen from "@/components/common/Spinner";
 import AboutMe from "@/components/common/AboutMe";
 
@@ -33,6 +36,7 @@ const Home = () => {
     try {
       if (user.uuid && user.email) {
         setLoading(true);
+        dispatch(removeAllTransaction());
         debouncedInit(user, dispatch);
       }
     } catch (err) {

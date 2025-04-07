@@ -6,16 +6,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Calendar, DollarSign, Filter, Tag } from "lucide-react";
+import { Calendar, DollarSign, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { categoryType } from "@/store/transactionSlice/transactionSlice";
-import { useEffect, useState } from "react";
 
 interface FilterModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  activeFilters: any[];
   dateRange: { from: string; to: string };
   setDateRange: Function;
   categories: string[];
@@ -32,7 +30,6 @@ interface FilterModalProps {
 const FilterModal = ({
   open,
   onOpenChange,
-  activeFilters,
   dateRange,
   setDateRange,
   categories,
@@ -61,8 +58,7 @@ const FilterModal = ({
             Filters
           </DialogTitle>
           <DialogDescription className="text-indigo-600">
-              Apply filters to narrow down your transactions.
-         
+            Apply filters to narrow down your transactions.
           </DialogDescription>
         </DialogHeader>
 
@@ -119,7 +115,7 @@ const FilterModal = ({
                     <input
                       type="checkbox"
                       checked={selectedCategories.includes(category)}
-                      onChange={() => toggleCategory(category)}
+                      onChange={() => toggleCategory(category as categoryType)}
                       className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <span className="truncate">{category}</span>

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 export type categoryType = "income" | "expense";
@@ -122,9 +122,14 @@ export default appSlice.reducer;
 
 // Selectors
 export const selectTransactions = (state: RootState) => state.app.transactions;
-export const selectSummary = (state: RootState) => ({
-  totalIncome: state.app.totalIncome,
-  totalExpenses: state.app.totalExpenses,
-  balance: state.app.balance,
-  budget: state.app.budget,
-});
+const selectAppState = (state: RootState) => state.app;
+
+export const selectSummary = createSelector([selectAppState], (app) => ({
+  totalIncome: app.totalIncome,
+  totalExpenses: app.totalExpenses,
+  balance: app.balance,
+  budget: app.budget,
+}));
+
+
+

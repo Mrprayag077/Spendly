@@ -6,8 +6,6 @@ import { ProfileIcon } from "@/components/common/Profile";
 import ProgressSection from "@/components/common/ProgressBar";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  auth,
-  login,
   selectUser,
   setSettings,
   showSuggestions,

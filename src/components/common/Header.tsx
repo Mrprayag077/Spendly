@@ -1,15 +1,7 @@
-import { Database, DollarSign, LogOut, Menu, RotateCcw } from "lucide-react";
+import { DollarSign, LogOut, Menu } from "lucide-react";
 import { AddBudgetModal } from "../Home/AddBudgetModal";
 import { Button } from "../ui/button";
-import { useDispatch, useSelector } from "react-redux";
-import { dummyDataTransaction } from "@/assets";
-import {
-  addTransaction,
-  removeAllTransaction,
-  selectTransactions,
-  setBudget,
-  Transaction,
-} from "@/store/transactionSlice/transactionSlice";
+import { useDispatch } from "react-redux";
 import { handleLogout } from "@/utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/store/authSlice/authSlice";
@@ -17,26 +9,6 @@ import { logout } from "@/store/authSlice/authSlice";
 function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const transactions = useSelector(selectTransactions);
-
-  const handleInjectDummyData = async () => {
-    dispatch(removeAllTransaction());
-    setTimeout(() => {
-      Object.entries(
-        dummyDataTransaction.transactions as Record<string, Transaction>
-      ).forEach(([id, transaction]) => {
-        dispatch(addTransaction({ id, transaction }));
-      });
-
-      dispatch(setBudget(3000));
-    }, 0);
-  };
-
-  const handleResetData = async () => {
-    dispatch(removeAllTransaction());
-    dispatch(setBudget(0));
-  };
 
   function logoutUser() {
     try {

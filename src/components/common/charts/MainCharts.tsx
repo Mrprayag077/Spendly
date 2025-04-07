@@ -110,10 +110,6 @@ const CombinedChart = () => {
 
   // Calculate overall budget performance
   const totalBudget = dailyBudgetData.reduce((sum, day) => sum + day.budget, 0);
-  const totalActual = dailyBudgetData.reduce((sum, day) => sum + day.actual, 0);
-  const overallDifference = totalBudget - totalActual;
-  const percentOfBudget = Math.round((totalActual / totalBudget) * 100);
-  const isOverBudget = overallDifference < 0;
 
   const renderChart = () => {
     if (viewMode === "area") {

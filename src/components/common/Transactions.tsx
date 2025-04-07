@@ -152,7 +152,7 @@ const Transactions = () => {
 
     setTransactions(filtered);
     setActiveFilters(appliedFilters);
-    setCurrentPage(1); // Reset page to 1 when filters change
+    setCurrentPage(1);
   }, [
     searchTerm,
     dateRange,
@@ -279,7 +279,6 @@ const Transactions = () => {
             <FilterModal
               open={filterOpen}
               onOpenChange={setFilterOpen}
-              activeFilters={activeFilters}
               dateRange={dateRange}
               setDateRange={setDateRange}
               categories={categories}

@@ -16,8 +16,6 @@ import {
   selectTransactions,
 } from "@/store/transactionSlice/transactionSlice";
 import { toast } from "sonner";
-import { selectUser } from "@/store/authSlice/authSlice";
-import { transactionApi } from "@/services/api";
 const defaultCategories = ["Groceries", "Rent", "Fuel", "Salary", "Shopping"];
 
 export const AddTransactionModal = ({
@@ -39,7 +37,7 @@ export const AddTransactionModal = ({
 }) => {
   const dispatch = useDispatch();
   const transaction = useSelector(selectTransactions);
-  const user = useSelector(selectUser);
+  // const user = useSelector(selectUser);
   const transactionList = Object.values(transaction);
 
   const [type, setType] = useState<categoryType>(
@@ -74,21 +72,21 @@ export const AddTransactionModal = ({
 
     if (isEdit) {
       dispatch(editTransaction(payload));
-      transactionApi({
-        userUUID: user.uuid,
-        action: "edit_transaction",
-        transactionId,
-        transactionData: payload.transaction,
-      });
+      // transactionApi({
+      //   userUUID: user.uuid,
+      //   action: "edit_transaction",
+      //   transactionId,
+      //   transactionData: payload.transaction,
+      // });
       toast.success("Transaction Updated successfully!!");
     } else {
       dispatch(addTransaction(payload));
-      transactionApi({
-        userUUID: user.uuid,
-        action: "add_transaction",
-        transactionId,
-        transactionData: payload.transaction,
-      });
+      // transactionApi({
+      //   userUUID: user.uuid,
+      //   action: "add_transaction",
+      //   transactionId,
+      //   transactionData: payload.transaction,
+      // });
       toast.success("Transaction Added successfully!!");
     }
 

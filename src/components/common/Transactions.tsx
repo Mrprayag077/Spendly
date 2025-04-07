@@ -21,8 +21,6 @@ import {
   PaginationNext,
 } from "../ui/pagination";
 import { toast } from "sonner";
-import { transactionApi } from "@/services/api";
-import { selectUser } from "@/store/authSlice/authSlice";
 
 interface DateRange {
   from: string;
@@ -193,7 +191,7 @@ const Transactions = () => {
         break;
     }
   };
-  const user = useSelector(selectUser);
+  // const user = useSelector(selectUser);
 
   const toggleCategory = (category: categoryType) => {
     setSelectedCategories((prev) =>
@@ -220,11 +218,11 @@ const Transactions = () => {
     if (window.confirm("Are you sure you want to delete this transaction?")) {
       dispatch(removeTransaction(id));
 
-      transactionApi({
-        userUUID: user.uuid,
-        action: "delete_transaction",
-        transactionId: id,
-      });
+      // transactionApi({
+      //   userUUID: user.uuid,
+      //   action: "delete_transaction",
+      //   transactionId: id,
+      // });
 
       toast.success("Transaction deleted successfully!");
     }

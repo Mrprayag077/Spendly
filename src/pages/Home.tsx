@@ -6,6 +6,7 @@ import { ProfileIcon } from "@/components/common/Profile";
 import ProgressSection from "@/components/common/ProgressBar";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  login,
   selectUser,
   setSettings,
   showSuggestions,
@@ -13,14 +14,17 @@ import {
 import FinancialWarnings from "@/components/common/FinancialWarnings";
 import { ListCollapse } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { debouncedInit } from "@/services/api";
 import { useEffect, useState } from "react";
 import {
+  addTransaction,
   removeAllTransaction,
   selectSummary,
+  setBudget,
+  Transaction,
 } from "@/store/transactionSlice/transactionSlice";
 import LoadingScreen from "@/components/common/Spinner";
 import AboutMe from "@/components/common/AboutMe";
+import { dummyTransactions } from "@/assets/data/dummyData";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -32,11 +36,27 @@ const Home = () => {
 
   useEffect(() => {
     try {
-      if (user.uuid && user.email) {
-        setLoading(true);
-        dispatch(removeAllTransaction());
-        debouncedInit(user, dispatch);
-      }
+      // if (user.uuid && user.email) {
+      setLoading(true);
+      dispatch(removeAllTransaction());
+      // debouncedInit(user, dispatch);
+
+      // STATIC FRONTEND
+      Object.entries(dummyTransactions as Record<string, Transaction>).forEach(
+        ([id, transaction]) => {
+          dispatch(addTransaction({ id, transaction }));
+        }
+      );
+      dispatch(setBudget(5000));
+
+      dispatch(
+        login({
+          uuid: "0077047242ihi894",
+          name: "Prayag Bhosale",
+          email: "prayagbhosale@gmail.com",
+        })
+      );
+      // }
     } catch (err) {
       console.log(err);
     } finally {
@@ -52,6 +72,25 @@ const Home = () => {
 
         <main className="pt-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div
+              className="bg-red-100 border my-2 border-red-400 text-red-700 text-sm px-3 py-2 rounded relative"
+              role="alert"
+            >
+              <strong className="font-bold">📢 Note:</strong>
+              <span className="block sm:inline">
+                The backend is hosted on the Render platform. Due to its lower
+                latency, this app currently uses static data on Vercel for a
+                smoother experience.
+              </span>
+              <a
+                href="https://github.com/Mrprayag077/Spendly_Backend"
+                target="_blank"
+                className="underline font-semibold ml-1"
+              >
+                View Backend Repository
+              </a>
+            </div>
+
             <FinancialWarnings />
 
             <div className="bg-white rounded-2xl shadow-md p-2 lg:p-6 transition-all duration-500 mb-4">

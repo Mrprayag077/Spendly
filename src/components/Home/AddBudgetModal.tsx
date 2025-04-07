@@ -16,7 +16,6 @@ import {
   selectSummary,
   setBudget,
 } from "@/store/transactionSlice/transactionSlice";
-import { updateProfileP } from "@/services/api";
 import { toast } from "sonner";
 
 export const AddBudgetModal = () => {
@@ -37,7 +36,7 @@ export const AddBudgetModal = () => {
     try {
       dispatch(setBudget(newBudget));
 
-      updateProfileP({ userUUID: uuid, profileData: { budget: newBudget } });
+      // updateProfileP({ userUUID: uuid, profileData: { budget: newBudget } });
       toast.success("Budget updated successfully!!");
       dispatch(setSettings(false));
       setOpen(false);
